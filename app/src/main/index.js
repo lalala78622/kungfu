@@ -165,7 +165,7 @@ function setMenu() {
 
 	const template = [
 	{
-		label: "Kungfu",
+		label: "System",
 		submenu: applicationOptions
 	}, 
 	{

@@ -1,5 +1,5 @@
 <template>
-      <tr-dashboard title="行情源">
+      <tr-dashboard title="行情来源">
         <div class="md-source">
             <el-table
             size="small"
