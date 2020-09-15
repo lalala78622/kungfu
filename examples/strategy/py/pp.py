@@ -9,7 +9,7 @@ exchange = Exchange.SHFE
 '''
 SOURCE = Source.XTP
 account = "15015255"
-tickers = ["600000"]
+tickers = ["600036"]
 exchange = Exchange.SSE
 
 price_list = []
@@ -67,12 +67,12 @@ def on_quote(context, quote):
     context.log.info('judge:{}, {}, {}'.format(quote.bid_price[0],average,quote.ask_price[0]))
     if quote.ask_price[0] > average:
         context.log.warning('will buy')
-        #order_id = context.insert_order(quote.instrument_id, exchange, account, quote.ask_price[0], 100, PriceType.Limit, Side.Buy, Offset.Open)
-        #context.log.warning('order_id={}'.format(order_id))
+        order_id = context.insert_order(quote.instrument_id, exchange, account, quote.ask_price[0], 100, PriceType.Limit, Side.Buy, Offset.Open)
+        context.log.warning('order_id={}'.format(order_id))
     elif quote.bid_price[0] < average:
         context.log.warning('will sell')
-        #order_id = context.insert_order(quote.instrument_id, exchange, account, quote.bid_price[0], 100, PriceType.Limit, Side.Sell, Offset.Open)
-        #context.log.warning('order_id={}'.format(order_id))    
+        order_id = context.insert_order(quote.instrument_id, exchange, account, quote.bid_price[0], 100, PriceType.Limit, Side.Sell, Offset.Open)
+        context.log.warning('order_id={}'.format(order_id))    
 
 def on_transaction(context, transaction):
     context.log.info("[on_transaction] {} {}".format(transaction.instrument_id, transaction.exchange_id))

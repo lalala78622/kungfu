@@ -5,6 +5,7 @@
 #include <kungfu/wingchun/msg.h>//平台数据结构头文件
 #include <kungfu/wingchun/strategy/context.h>
 #include <kungfu/wingchun/strategy/strategy.h>
+#include <kungfu/wingchun/common.h>
 
 namespace py = pybind11;
 
@@ -44,7 +45,7 @@ public:
 	{
 		SPDLOG_INFO("[pre_start]");
         std::vector<std::string> tickers;
-        tickers.push_back("600000");
+        tickers.push_back("600036");
         context->add_account("xtp", "15015255", 1000000.0);
         context->subscribe("xtp", tickers, "SSE");
         SPDLOG_INFO("subscribe finish");
@@ -52,7 +53,7 @@ public:
 
 	void on_quote(Context_ptr context, const msg::data::Quote &quote) override
 	{
-		SPDLOG_INFO("[on_quote] last_price:{} data_time{}",quote.last_price,quote.data_time);
+		/*SPDLOG_INFO("[on_quote] last_price:{} data_time{}",quote.last_price,quote.data_time);
         
         int64_t now = getTimestamp();
         PriceMsg pricemsg;
@@ -83,19 +84,33 @@ public:
             SPDLOG_INFO("judge: {} {} {}",quote.bid_price[0], average, quote.ask_price[0]);
             if(quote.ask_price[0] > average){
                 SPDLOG_INFO("will buy");
-                //uint64_t orderid = insert_order(quote.instrument_id, exchange, account, quote.ask_price[0], 100, Limit, Buy, Open);
+                //uint64_t orderid = context->insert_order(quote.instrument_id, exchange, account, quote.ask_price[0], 100, Limit, Buy, Open);
                 //SPDLOG_INFO("orderid:{}",orderid);
             }else if(quote.bid_price[0] < average){
                 SPDLOG_INFO("will sell");
-                //uint64_t orderid = insert_order(quote.instrument_id, exchange, account, quote.bid_price[0], 100, Limit, Sell, Open);
+                //uint64_t orderid = context->insert_order(quote.instrument_id, exchange, account, quote.bid_price[0], 100, Limit, Sell, Open);
                 //SPDLOG_INFO("orderid:{}",orderid);                
             }
-        }
+        }*/
+
+        //turnover/volume
+        SPDLOG_INFO("[on_quote]: {} {}",quote.turnover, quote.volume);
+        double average = quote.turnover/quote.volume;
+        SPDLOG_INFO("judge: {} {} {}",quote.bid_price[0], average, quote.ask_price[0]);
+        if(quote.ask_price[0] > average){
+            SPDLOG_INFO("will buy");
+            uint64_t orderid = context->insert_order(quote.instrument_id, exchange, account, quote.ask_price[0], 100, PriceType::Limit, Side::Buy, Offset::Open);
+            SPDLOG_INFO("orderid:{}",orderid);
+        }else if(quote.bid_price[0] < average){
+            SPDLOG_INFO("will sell");
+            uint64_t orderid = context->insert_order(quote.instrument_id, exchange, account, quote.bid_price[0], 100, PriceType::Limit, Side::Sell, Offset::Open);
+            SPDLOG_INFO("orderid:{}",orderid);                
+        }        
 	};
 
     void on_order(Context_ptr context, const msg::data::Order &order) override
     {
-        SPDLOG_INFO("[on_order] order_id:{}",order.order_id);
+        SPDLOG_INFO("[on_order] order_id:{} msg:{}",order.order_id, order.error_msg);
 
     }
 
