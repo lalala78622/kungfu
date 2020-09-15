@@ -1,8 +1,8 @@
 #include <pybind11/pybind11.h> //pybind11头文件
 #include <pybind11/stl.h>//pybind11头文件
 #include <iostream>
-#include <kungfu/yijinjing/log/setup.h>//log头文件#include <kungfu/wingchun/msg.h>//平台数据结构头文
-//件
+#include <kungfu/yijinjing/log/setup.h>//log头文件
+#include <kungfu/wingchun/msg.h>//平台数据结构头文件
 #include <kungfu/wingchun/strategy/context.h>
 #include <kungfu/wingchun/strategy/strategy.h>
 
@@ -22,18 +22,24 @@ public:
 	DemoStrategy(yijinjing::data::location_ptr home)
 	{
 		SPDLOG_INFO("cpp demo pre start2");
-		std::cout << "cpp demo pre start3" << std::endl;
+		
 		yijinjing::log::copy_log_settings(home, "demo");
 	};
 
 	void pre_start(Context_ptr context) override
 	{
-		SPDLOG_INFO("cpp demo pre start");
+		SPDLOG_INFO("[pre_start]");
+        std::vector<std::string> tickers;
+        tickers.push_back("au2012");
+        context->add_account("ctp", "172634", 1000000.0);
+        context->subscribe("ctp", tickers, "SHFE");
+        SPDLOG_INFO("subscribe finish");
 	};
 
 	void on_quote(Context_ptr context, const msg::data::Quote &quote) override
 	{
-		SPDLOG_INFO("cpp demo on quote");
+		SPDLOG_INFO("[on_quote] last_price:",quote.last_price);
+        SPDLOG_INFO("quote:",quote.instrument_id,quote.exchange_id,quote.volume);
 	};
 };
 
