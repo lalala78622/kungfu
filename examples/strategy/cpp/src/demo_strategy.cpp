@@ -49,6 +49,16 @@ public:
         context->add_account("xtp", "15015255", 1000000.0);
         context->subscribe("xtp", tickers, "SSE");
         SPDLOG_INFO("subscribe finish");
+
+        /*msg::data::Quote quote;
+        quote.last_price = 100;
+        std::string str = to_string(quote);
+        cout<<str<<endl;*/
+
+        /*nlohmann::json j;
+        to_json(j, quote);
+        cout<<j.dump(-1, ' ', false, nlohmann::json::error_handler_t::ignore)<<endl;*/
+
 	};
 
 	void on_quote(Context_ptr context, const msg::data::Quote &quote) override
