@@ -1,10 +1,17 @@
 import time
 import kungfu.yijinjing.time as kft
 from kungfu.wingchun.constants import *
+'''
 SOURCE = "ctp"
 account = "172634"
 tickers = ["au2012"]
 exchange = Exchange.SHFE
+'''
+SOURCE = Source.XTP
+account = "15015255"
+tickers = ["600000"]
+exchange = Exchange.SSE
+
 price_list = []
 global first_time
 first_time = 0
@@ -47,12 +54,12 @@ def on_quote(context, quote):
         context.log.info('judge:{}, {}, {}'.format(quote.bid_price[0],average,quote.ask_price[0]))
         if quote.ask_price[0] > average:
             context.log.warning('will buy')
-            order_id = context.insert_order(quote.instrument_id, exchange, account, quote.ask_price[0], 1, PriceType.Limit, Side.Buy, Offset.Open)
-            context.log.warning('order_id={}'.format(order_id))
+            #order_id = context.insert_order(quote.instrument_id, exchange, account, quote.ask_price[0], 100, PriceType.Limit, Side.Buy, Offset.Open)
+            #context.log.warning('order_id={}'.format(order_id))
         elif quote.bid_price[0] < average:
             context.log.warning('will sell')
-            order_id = context.insert_order(quote.instrument_id, exchange, account, quote.bid_price[0], 1, PriceType.Limit, Side.Sell, Offset.Open)
-            context.log.warning('order_id={}'.format(order_id))
+            #order_id = context.insert_order(quote.instrument_id, exchange, account, quote.bid_price[0], 100, PriceType.Limit, Side.Sell, Offset.Open)
+            #context.log.warning('order_id={}'.format(order_id))
 
 def on_transaction(context, transaction):
     context.log.info("[on_transaction] {} {}".format(transaction.instrument_id, transaction.exchange_id))

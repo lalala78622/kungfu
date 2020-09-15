@@ -13,11 +13,25 @@ using namespace kungfu::wingchun;
 using namespace kungfu::wingchun::strategy;
 using namespace std;
 
-//std::cout << "start" << std::endl;
+struct PriceMsg
+{
+    double price;
+    int64_t timestamp;
+};
 
 //继承strategy接口，写自己的strategy类
 class DemoStrategy : public Strategy
 {
+private:
+    std::string source = "xtp";
+    std::string account = "15015255";
+    std::string exchange = "SSE";
+
+    std::vector<PriceMsg> price_vec;
+    bool start = false;
+    int64_t first_time = 0;
+    int64_t period = 30000;//ms
+
 public:
 	DemoStrategy(yijinjing::data::location_ptr home)
 	{
@@ -30,17 +44,71 @@ public:
 	{
 		SPDLOG_INFO("[pre_start]");
         std::vector<std::string> tickers;
-        tickers.push_back("au2012");
-        context->add_account("ctp", "172634", 1000000.0);
-        context->subscribe("ctp", tickers, "SHFE");
+        tickers.push_back("600000");
+        context->add_account("xtp", "15015255", 1000000.0);
+        context->subscribe("xtp", tickers, "SSE");
         SPDLOG_INFO("subscribe finish");
 	};
 
 	void on_quote(Context_ptr context, const msg::data::Quote &quote) override
 	{
-		SPDLOG_INFO("[on_quote] last_price:",quote.last_price);
-        SPDLOG_INFO("quote:",quote.instrument_id,quote.exchange_id,quote.volume);
+		SPDLOG_INFO("[on_quote] last_price:{} data_time{}",quote.last_price,quote.data_time);
+        
+        int64_t now = getTimestamp();
+        PriceMsg pricemsg;
+        pricemsg.price = quote.last_price;
+        pricemsg.timestamp = now;
+        price_vec.push_back(pricemsg);
+
+        double total = 0; double average = 0;
+        for(auto it = price_vec.begin(); it != price_vec.end();){
+            if(now - it->timestamp > period){
+                it = price_vec.erase(it);
+                continue;
+            }else{
+                total += it->price;
+                it++;
+            }
+        }
+        if(price_vec.size() > 0){
+            average = total / price_vec.size();
+        }
+
+        if(!start){
+            start = true;
+            first_time = now;
+        }
+
+        if(now - first_time > period && average != 0){
+            SPDLOG_INFO("judge: {} {} {}",quote.bid_price[0], average, quote.ask_price[0]);
+            if(quote.ask_price[0] > average){
+                SPDLOG_INFO("will buy");
+                //uint64_t orderid = insert_order(quote.instrument_id, exchange, account, quote.ask_price[0], 100, Limit, Buy, Open);
+                //SPDLOG_INFO("orderid:{}",orderid);
+            }else if(quote.bid_price[0] < average){
+                SPDLOG_INFO("will sell");
+                //uint64_t orderid = insert_order(quote.instrument_id, exchange, account, quote.bid_price[0], 100, Limit, Sell, Open);
+                //SPDLOG_INFO("orderid:{}",orderid);                
+            }
+        }
 	};
+
+    void on_order(Context_ptr context, const msg::data::Order &order) override
+    {
+        SPDLOG_INFO("[on_order] order_id:{}",order.order_id);
+
+    }
+
+    void on_trade(Context_ptr context, const msg::data::Trade &trade) override
+    {
+        SPDLOG_INFO("[on_trade] order_id:{}",trade.order_id);
+    }
+
+    int64_t getTimestamp()
+    {
+        long long timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        return timestamp;
+    }
 };
 
 
