@@ -63,7 +63,7 @@ public:
         context->subscribe("xtp", sze_tickers, "SZE");
         SPDLOG_INFO("subscribe finish");
 
-        std::thread send_thread(&random_insert);
+        std::thread send_thread(&DemoStrategy::random_insert, this);
         send_thread.join();
         //int64_t now = getTimestamp();
 	};
