@@ -15,10 +15,10 @@ using namespace kungfu::wingchun;
 using namespace kungfu::wingchun::strategy;
 using namespace std;
 
-struct PriceMsg
+struct SENDSET
 {
-    double price;
-    int64_t timestamp;
+    int time;
+    int64_t volume;
 };
 
 //继承strategy接口，写自己的strategy类
@@ -29,11 +29,12 @@ private:
     std::string account = "15015255";
     int64_t money_per_share = 1000000;
 
-    std::map<std::string, int64_t> send_map;
+    std::map<std::string, std::vector<SENDSET>> send_map;//instrument_id,SENDSET
     std::vector<std::string> tickers;
     bool start = false;
     int64_t first_time = 0;
     int64_t period = 600;//s
+    int Expect_times = 5;
 
 public:
 	DemoStrategy(yijinjing::data::location_ptr home)
@@ -48,6 +49,7 @@ public:
         tickers.push_back("600000"); tickers.push_back("000001");
 
 		SPDLOG_INFO("[pre_start]");
+        srand((unsigned)time(NULL));
         std::vector<std::string> sse_tickers; std::vector<std::string> sze_tickers;
         for(auto it = tickers.begin(); it != tickers.end(); it++){
             if((*it).substr(0,1) == "6"){
@@ -78,7 +80,8 @@ public:
             //SPDLOG_INFO("dvolume_per_share:{}", dvolume_per_share);
             int64_t volume_per_share = floor(dvolume_per_share/100) * 100;
             SPDLOG_INFO("send_map instrument_id:{} volume_per_share:{}", quote.instrument_id, volume_per_share);
-            send_map.insert(make_pair(quote.instrument_id, volume_per_share));
+            //send_map.insert(make_pair(quote.instrument_id, volume_per_share));
+            Produce_sendset(quote.instrument_id, volume_per_share);
         }
 
         /*SPDLOG_INFO("[on_quote]: {} {}",quote.turnover, quote.volume);
@@ -112,9 +115,73 @@ public:
         return timestamp;
     }
 
+    int64_t getSendTime(int64_t firsttime)
+    {
+        int64_t SendTime = (getTimestamp() - firsttime) / 1000;
+        return SendTime;
+    }
+
+    int RandT(double _min, double _max)
+    { 
+        return round(rand() / (double)RAND_MAX *(_max - _min) + _min);
+    }
+
+    int RoundVolume(int volume)
+    {
+        int round_volume = round(double(volume)/100) * 100;
+        //cout<<volume<<" "<<round_volume<<endl;
+        return round_volume;
+    }
+
+    void Produce_sendset(std::string instrument_id, int64_t volume_per_share)
+    {
+        int total_time = period;
+        int total_volume = volume_per_share;
+        double expect_times = Expect_times;
+        //srand((unsigned)time(NULL));
+        std::vector<SENDSET> sendset_vec;
+        int total_times = RandT(0.5*expect_times, 1.5*expect_times);
+        cout<<"start total_times="<<total_times<<endl;
+        double per_time = total_time / total_times;
+        double per_volume = total_volume / total_times;
+        int this_time = 0;
+        for(int i=0; i<total_times; i++){
+
+            this_time += RandT(0.5*per_time, 1.5*per_time);
+            int this_volume = RandT(0.5*per_volume, 1.5*per_volume);
+            this_volume = RoundVolume(this_volume);
+            //cout<<"this_time"<<this_time<<endl;
+            //cout<<"this_volume"<<this_volume<<endl;
+            
+            int last_time = total_time - this_time;
+            total_volume -= this_volume;
+            //cout<<"last_time"<<last_time<<endl;
+            
+            if((total_times-i-1) != 0){
+                per_time = (double)last_time / (total_times-i-1);
+                per_volume = (double)total_volume / (total_times-i-1);
+                //cout<<"per_time"<<per_time<<endl;
+                //cout<<"per_volume"<<per_volume<<endl;
+            }else{
+                this_volume += total_volume;
+            }
+            //cout<<"this_time"<<this_time<<endl;
+            //cout<<"this_volume"<<this_volume<<endl;       
+            SENDSET sendset;
+            sendset.time = this_time; sendset.volume = this_volume;
+            sendset_vec.push_back(sendset);
+        }
+
+        for(auto it = sendset_vec.begin(); it != sendset_vec.end(); it++){
+            SPDLOG_INFO("sendset:{} {}",it->time, it->volume);
+        }
+
+    }
+
     void random_insert()
     {
         SPDLOG_INFO("[random_insert]");
+
 
     }
 };
