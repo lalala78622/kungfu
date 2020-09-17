@@ -33,7 +33,7 @@ private:
     std::vector<std::string> tickers;
     bool start = false;
     int64_t first_time = 0;
-    int64_t period = 600;//s
+    int64_t period = 30;//s
     int Expect_times = 5;
 
 public:
@@ -65,10 +65,35 @@ public:
         context->subscribe("xtp", sze_tickers, "SZE");
         SPDLOG_INFO("subscribe finish");
 
-        std::thread send_thread(&DemoStrategy::random_insert, this);
-        send_thread.join();
-        //int64_t now = getTimestamp();
+		/*std::function<void(yijinjing::event_ptr) > random = &DemoStrategy::random_insert;
+        context->add_timer(context->now() + 10*1000000000, random);*/
+        context->add_timer(context->now() + 10*1000000000, std::bind(&DemoStrategy::random_insert,this));
+        //std::thread send_thread(&DemoStrategy::random_insert, this);
+        //send_thread.join();
+        
 	};
+
+    void post_start(Context_ptr context) override
+    {
+        SPDLOG_INFO("[post_start]");
+        //std::thread send_thread(&DemoStrategy::random_insert, this);
+        //send_thread.join();
+        SPDLOG_INFO("[post_start] end.");
+    }
+
+    void pre_stop(Context_ptr context) override
+    {
+        SPDLOG_INFO("[pre_stop]");
+    
+        SPDLOG_INFO("[pre_stop] end.");
+    }
+
+    void post_stop(Context_ptr context) override
+    {
+        SPDLOG_INFO("[post_stop]");
+
+        SPDLOG_INFO("[post_stop] end.");        
+    }
 
 	void on_quote(Context_ptr context, const msg::data::Quote &quote) override
 	{
@@ -117,7 +142,8 @@ public:
 
     int64_t getSendTime(int64_t firsttime)
     {
-        int64_t SendTime = (getTimestamp() - firsttime) / 1000;
+        //int64_t SendTime = (getTimestamp() - firsttime) / 1000;
+        int64_t SendTime = getTimestamp() - firsttime;
         return SendTime;
     }
 
@@ -172,17 +198,45 @@ public:
             sendset_vec.push_back(sendset);
         }
 
-        for(auto it = sendset_vec.begin(); it != sendset_vec.end(); it++){
+        /*for(auto it = sendset_vec.begin(); it != sendset_vec.end(); it++){
             SPDLOG_INFO("sendset:{} {}",it->time, it->volume);
-        }
+        }*/
+        send_map.insert(make_pair(instrument_id, sendset_vec));
 
     }
 
-    void random_insert()
+    //template <yijinjing::event_ptr event>
+    void random_insert(yijinjing::event_ptr e)
+    //const std::function random_insert()
     {
         SPDLOG_INFO("[random_insert]");
+        first_time = getTimestamp();
+        SPDLOG_INFO("first_time={}",first_time);
 
+        while(1){
+            int64_t now = getSendTime(first_time);
+            for(auto map_it = send_map.begin(); map_it != send_map.end();){
+                start = true;
+                auto vec_it = map_it->second.begin();
+                if(vec_it != map_it->second.end()){
+                    if(now >= vec_it->time * 1000){
+                        SPDLOG_INFO("will buy:{} {} {}",map_it->first, vec_it->time, vec_it->volume);
+                        vec_it = map_it->second.erase(vec_it);
+                    }
+                    map_it++;
+                }else{
+                    SPDLOG_INFO("send finish:{}", map_it->first);
+                    map_it = send_map.erase(map_it);
+                }                
+            }
 
+            if(start && send_map.size() == 0){
+                break;
+            }
+
+        }
+
+        SPDLOG_INFO("[random_insert] end.");
     }
 };
 
