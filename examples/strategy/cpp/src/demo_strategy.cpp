@@ -67,7 +67,8 @@ public:
 
 		/*std::function<void(yijinjing::event_ptr) > random = &DemoStrategy::random_insert;
         context->add_timer(context->now() + 10*1000000000, random);*/
-        context->add_timer(context->now() + 10*1000000000, std::bind(&DemoStrategy::random_insert,this));
+        //context->add_timer(std::bind(context->now() + 10*1000000000, &DemoStrategy::random_insert,this));
+        context->add_timer(context->now() + 10*1000000000, std::bind(&DemoStrategy::random_insert, std::placeholders::_1));
         //std::thread send_thread(&DemoStrategy::random_insert, this);
         //send_thread.join();
         
@@ -206,7 +207,7 @@ public:
     }
 
     //template <yijinjing::event_ptr event>
-    void random_insert(yijinjing::event_ptr e)
+    static void random_insert(yijinjing::event_ptr event)
     //const std::function random_insert()
     {
         SPDLOG_INFO("[random_insert]");
