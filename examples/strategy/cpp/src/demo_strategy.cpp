@@ -20,6 +20,7 @@ struct SENDSET
     int time;
     int64_t volume;
 };
+std::map<std::string, std::vector<SENDSET>> send_map;
 
 //继承strategy接口，写自己的strategy类
 class DemoStrategy : public Strategy
@@ -29,10 +30,10 @@ private:
     std::string account = "15015255";
     int64_t money_per_share = 1000000;
 
-    std::map<std::string, std::vector<SENDSET>> send_map;//instrument_id,SENDSET
+    //std::map<std::string, std::vector<SENDSET>> send_map;//instrument_id,SENDSET
     std::vector<std::string> tickers;
-    bool start = false;
-    int64_t first_time = 0;
+    //static bool start = false;
+    //int64_t first_time = 0;
     int64_t period = 30;//s
     int Expect_times = 5;
 
@@ -135,13 +136,13 @@ public:
         SPDLOG_INFO("[on_trade] order_id:{}",trade.order_id);
     }
 
-    int64_t getTimestamp()
+    static int64_t getTimestamp()
     {
         long long timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         return timestamp;
     }
 
-    int64_t getSendTime(int64_t firsttime)
+    static int64_t getSendTime(int64_t firsttime)
     {
         //int64_t SendTime = (getTimestamp() - firsttime) / 1000;
         int64_t SendTime = getTimestamp() - firsttime;
@@ -208,11 +209,11 @@ public:
 
     //template <yijinjing::event_ptr event>
     static void random_insert(yijinjing::event_ptr event)
-    //const std::function random_insert()
     {
         SPDLOG_INFO("[random_insert]");
-        first_time = getTimestamp();
+        int64_t first_time = getTimestamp();
         SPDLOG_INFO("first_time={}",first_time);
+        bool start = false;
 
         while(1){
             int64_t now = getSendTime(first_time);
