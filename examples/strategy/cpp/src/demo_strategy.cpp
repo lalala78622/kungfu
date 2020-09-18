@@ -8,6 +8,10 @@
 #include <kungfu/wingchun/common.h>
 #include <thread>
 
+#include "..\..\..\..\utils\rapidjson\include\document.h"
+#include "..\..\..\..\utils\rapidjson\include\writer.h"
+#include "..\..\..\..\utils\rapidjson\include\stringbuffer.h"
+
 namespace py = pybind11;
 
 using namespace kungfu;
@@ -21,6 +25,8 @@ struct SENDSET
     int64_t volume;
 };
 std::map<std::string, std::vector<SENDSET>> send_map;
+std::mutex send_mutex;
+bool start = false;
 
 //继承strategy接口，写自己的strategy类
 class DemoStrategy : public Strategy
@@ -101,8 +107,9 @@ public:
 	{
 		SPDLOG_INFO("[on_quote] instrument_id:{} price:{}",quote.instrument_id,quote.ask_price[0]);
 
+        std::unique_lock<std::mutex> lck(send_mutex);
         auto it = send_map.find(quote.instrument_id);
-        if(it == send_map.end()){
+        if(it == send_map.end() && !start){
             double dvolume_per_share = double(money_per_share) / quote.ask_price[0];
             //SPDLOG_INFO("dvolume_per_share:{}", dvolume_per_share);
             int64_t volume_per_share = floor(dvolume_per_share/100) * 100;
@@ -110,6 +117,7 @@ public:
             //send_map.insert(make_pair(quote.instrument_id, volume_per_share));
             Produce_sendset(quote.instrument_id, volume_per_share);
         }
+        lck.unlock();
 
         /*SPDLOG_INFO("[on_quote]: {} {}",quote.turnover, quote.volume);
         double average = quote.turnover/quote.volume;
@@ -190,7 +198,10 @@ public:
                 per_volume = (double)total_volume / (total_times-i-1);
                 //cout<<"per_time"<<per_time<<endl;
                 //cout<<"per_volume"<<per_volume<<endl;
-            }else{
+            }else{//最后一次
+                if(this_time > total_time){
+                    this_time = total_time;
+                }
                 this_volume += total_volume;
             }
             //cout<<"this_time"<<this_time<<endl;
@@ -213,10 +224,11 @@ public:
         SPDLOG_INFO("[random_insert]");
         int64_t first_time = getTimestamp();
         SPDLOG_INFO("first_time={}",first_time);
-        bool start = false;
+        //bool start = false;
 
         while(1){
             int64_t now = getSendTime(first_time);
+            std::unique_lock<std::mutex> lck(send_mutex);
             for(auto map_it = send_map.begin(); map_it != send_map.end();){
                 start = true;
                 auto vec_it = map_it->second.begin();
@@ -231,6 +243,7 @@ public:
                     map_it = send_map.erase(map_it);
                 }                
             }
+            lck.unlock();
 
             if(start && send_map.size() == 0){
                 break;
