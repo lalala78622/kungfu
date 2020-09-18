@@ -19,6 +19,8 @@ using namespace kungfu::wingchun;
 using namespace kungfu::wingchun::strategy;
 using namespace std;
 
+std::string account = "15015255";
+
 struct SENDSET
 {
     int time;
@@ -33,7 +35,7 @@ class DemoStrategy : public Strategy
 {
 private:
     std::string source = "xtp";
-    std::string account = "15015255";
+    //std::string account = "15015255";
     int64_t money_per_share = 1000000;
 
     //std::map<std::string, std::vector<SENDSET>> send_map;//instrument_id,SENDSET
@@ -72,10 +74,7 @@ public:
         context->subscribe("xtp", sze_tickers, "SZE");
         SPDLOG_INFO("subscribe finish");
 
-		/*std::function<void(yijinjing::event_ptr) > random = &DemoStrategy::random_insert;
-        context->add_timer(context->now() + 10*1000000000, random);*/
-        //context->add_timer(std::bind(context->now() + 10*1000000000, &DemoStrategy::random_insert,this));
-        context->add_timer(context->now() + 10*1000000000, std::bind(&DemoStrategy::random_insert, std::placeholders::_1));
+        //context->add_timer(context->now() + 10*1000000000, std::bind(&DemoStrategy::random_insert, std::placeholders::_1, context));
         //std::thread send_thread(&DemoStrategy::random_insert, this);
         //send_thread.join();
         
@@ -157,6 +156,17 @@ public:
         return SendTime;
     }
 
+    static string getExchang(string instrument_id)
+    {
+        string exchange;
+        if(instrument_id.substr(0,1) == "6"){
+            exchange = "SSE";
+        }else{
+            exchange = "SZE";
+        }        
+        return exchange;
+    }
+
     int RandT(double _min, double _max)
     { 
         return round(rand() / (double)RAND_MAX *(_max - _min) + _min);
@@ -219,12 +229,11 @@ public:
     }
 
     //template <yijinjing::event_ptr event>
-    static void random_insert(yijinjing::event_ptr event)
+    static void random_insert(yijinjing::event_ptr event, Context_ptr context)
     {
         SPDLOG_INFO("[random_insert]");
         int64_t first_time = getTimestamp();
         SPDLOG_INFO("first_time={}",first_time);
-        //bool start = false;
 
         while(1){
             int64_t now = getSendTime(first_time);
@@ -235,6 +244,8 @@ public:
                 if(vec_it != map_it->second.end()){
                     if(now >= vec_it->time * 1000){
                         SPDLOG_INFO("will buy:{} {} {}",map_it->first, vec_it->time, vec_it->volume);
+                        //uint64_t orderid = context->insert_order(map_it->first, getExchang(map_it->first), account, quote.ask_price[0], vec_it->volume, PriceType::Any, Side::Buy, Offset::Open);
+                        //SPDLOG_INFO("orderid:{}",orderid);                        
                         vec_it = map_it->second.erase(vec_it);
                     }
                     map_it++;
