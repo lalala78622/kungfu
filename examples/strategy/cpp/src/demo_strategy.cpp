@@ -129,11 +129,11 @@ public:
 
 	void pre_start(Context_ptr context) override
 	{
-        tickers.push_back("000002"); tickers.push_back("000004");tickers.push_back("000005"); tickers.push_back("000006");
+        tickers.push_back("000002"); /*tickers.push_back("000004");tickers.push_back("000005"); tickers.push_back("000006");
         tickers.push_back("000007"); tickers.push_back("000008");tickers.push_back("000009"); tickers.push_back("000010");
         tickers.push_back("000011"); tickers.push_back("000012");tickers.push_back("600004"); tickers.push_back("600006");
         tickers.push_back("600007"); tickers.push_back("600008");tickers.push_back("600009"); tickers.push_back("600010");
-        tickers.push_back("600011"); tickers.push_back("600012");tickers.push_back("600015"); tickers.push_back("600016");
+        tickers.push_back("600011"); tickers.push_back("600012");tickers.push_back("600015"); tickers.push_back("600016");*/
 
 		SPDLOG_INFO("[pre_start]");
         srand((unsigned)time(NULL));
@@ -162,13 +162,13 @@ public:
     void post_start(Context_ptr context) override
     {
         SPDLOG_INFO("[post_start]");
-        context->add_timer(context->now() + 45*1000000000, std::bind(Init_sendvec, std::placeholders::_1, context));
+        context->add_timer(context->now() + 15*1000000000, std::bind(Init_sendvec, std::placeholders::_1, context));
         //std::thread send_thread(&DemoStrategy::random_insert, this);
         //send_thread.join();
         SPDLOG_INFO("[post_start] end.");
     }
 
-    void pre_stop(Context_ptr context) override
+    /*void pre_stop(Context_ptr context) override
     {
         SPDLOG_INFO("[pre_stop]");
     
@@ -180,7 +180,7 @@ public:
         SPDLOG_INFO("[post_stop]");
 
         SPDLOG_INFO("[post_stop] end.");        
-    }
+    }*/
 
 	void on_quote(Context_ptr context, const msg::data::Quote &quote) override
 	{
@@ -214,7 +214,7 @@ public:
 
 	};
 
-    void on_order(Context_ptr context, const msg::data::Order &order) override
+    /*void on_order(Context_ptr context, const msg::data::Order &order) override
     {
         SPDLOG_INFO("[on_order] order_id:{} msg:{}",order.order_id, order.error_msg);
 
@@ -223,7 +223,7 @@ public:
     void on_trade(Context_ptr context, const msg::data::Trade &trade) override
     {
         SPDLOG_INFO("[on_trade] order_id:{}",trade.order_id);
-    }
+    }*/
 
     static int64_t getTimestamp()
     {
@@ -330,6 +330,27 @@ public:
     }*/
 };
 
+void test(){
+    int64_t start_time = time(0);
+    while(1){
+        int64_t now = time(0);
+        if(now - start_time>=2){
+            SPDLOG_INFO(">>>>>>>>>>>2");
+            start_time = now;
+        }
+    }
+}
+
+int main(int argc, const char* argv[]){
+    cout<<"main"<<endl;
+    yijinjing::data::location_ptr home;
+    DemoStrategy demo(home);
+	Context_ptr context;
+    demo.pre_start(context);
+        std::thread send_thread(test);
+        send_thread.join();
+    SPDLOG_INFO("main end");
+}
 
 PYBIND11_MODULE(cpp_demo, m)
 {
