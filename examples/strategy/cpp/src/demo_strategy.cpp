@@ -33,6 +33,30 @@ std::mutex send_mutex;
 bool start = false;
 int64_t first_time = 0;
 
+/*void test(){
+    cout<<"test-----"<<endl;
+    int64_t start_time = time(0);
+    while(1){
+        int64_t now = time(0);
+        if(now - start_time>=2){
+            SPDLOG_INFO(">>>>>>>>>>>2");
+            start_time = now;
+        }
+    }
+}
+std::thread send_thread(test);*/
+
+/*int main(int argc, const char* argv[]){
+    cout<<"main"<<endl;
+    yijinjing::data::location_ptr home;
+    DemoStrategy demo(home);
+    Context_ptr context;
+    demo.pre_start(context);
+        std::thread send_thread(test);
+        send_thread.join();
+    SPDLOG_INFO("main end");
+}*/
+
 bool comp(const SENDSET &a, const SENDSET &b) {
     return a.time < b.time;
 }
@@ -57,6 +81,8 @@ int64_t getSendTime(Context_ptr context)
 
 void InsertOrder(yijinjing::event_ptr event, Context_ptr context, std::string instrument_id, int64_t volume)
 {
+    SPDLOG_INFO("[InsertOrder]");
+    //cout<<std::this_thread::get_id()<<endl;
     auto it = price_map.find(instrument_id);
     if(it != price_map.end()){
         SPDLOG_INFO("will buy:{} {} {}",instrument_id, it->second, volume);
@@ -69,7 +95,7 @@ void InsertOrder(yijinjing::event_ptr event, Context_ptr context, std::string in
         std::string _instrument_id = it2->instrument_id;
         int64_t _volume = it2->volume;
         int64_t now = getSendTime(context);
-        int64_t send_time = it2->time * 1e9 - now;
+        int64_t send_time = it2->time - now;
         SPDLOG_INFO("send_time = {}",send_time);
         send_vec.erase(it2);        
 
@@ -77,6 +103,8 @@ void InsertOrder(yijinjing::event_ptr event, Context_ptr context, std::string in
     }else{
         SPDLOG_INFO("finish all.");
     }  
+
+    SPDLOG_INFO("[InsertOrder] end.");
 }
 
 void Init_sendvec(yijinjing::event_ptr event, Context_ptr context){
@@ -96,7 +124,7 @@ void Init_sendvec(yijinjing::event_ptr event, Context_ptr context){
         int64_t volume = it->volume;       
         first_time = context->now();
         int64_t now = getSendTime(context);
-        int64_t send_time = it->time * 1e9 - now;
+        int64_t send_time = it->time * - now;
         SPDLOG_INFO("send_time2 = {}",send_time);
         send_vec.erase(it); 
         context->add_timer(context->now() + send_time, std::bind(InsertOrder, std::placeholders::_1, context, instrument_id, volume));
@@ -110,14 +138,14 @@ class DemoStrategy : public Strategy
 private:
     std::string source = "xtp";
     //std::string account = "15015255";
-    int64_t money_per_share = 100000;
+    int64_t money_per_share = 1000000;
 
     //std::map<std::string, std::vector<SENDSET>> send_map;//instrument_id,SENDSET
     std::vector<std::string> tickers;
     //static bool start = false;
     //int64_t first_time = 0;
-    int64_t period = 60;//s
-    int Expect_times = 12;
+    int64_t period = 600;//s
+    int Expect_times = 120;
 
 public:
 	DemoStrategy(yijinjing::data::location_ptr home)
@@ -129,13 +157,14 @@ public:
 
 	void pre_start(Context_ptr context) override
 	{
-        tickers.push_back("000002"); /*tickers.push_back("000004");tickers.push_back("000005"); tickers.push_back("000006");
+        tickers.push_back("000002"); tickers.push_back("000004");tickers.push_back("000005"); tickers.push_back("000006");
         tickers.push_back("000007"); tickers.push_back("000008");tickers.push_back("000009"); tickers.push_back("000010");
         tickers.push_back("000011"); tickers.push_back("000012");tickers.push_back("600004"); tickers.push_back("600006");
         tickers.push_back("600007"); tickers.push_back("600008");tickers.push_back("600009"); tickers.push_back("600010");
-        tickers.push_back("600011"); tickers.push_back("600012");tickers.push_back("600015"); tickers.push_back("600016");*/
+        tickers.push_back("600011"); tickers.push_back("600012");tickers.push_back("600015"); tickers.push_back("600016");
 
 		SPDLOG_INFO("[pre_start]");
+        //cout<<std::this_thread::get_id()<<endl;
         srand((unsigned)time(NULL));
         std::vector<std::string> sse_tickers; std::vector<std::string> sze_tickers;
         for(auto it = tickers.begin(); it != tickers.end(); it++){
@@ -156,7 +185,8 @@ public:
         //context->add_timer(context->now() + 10*1000000000, std::bind(&DemoStrategy::random_insert, std::placeholders::_1, context));
         //std::thread send_thread(&DemoStrategy::random_insert, this);
         //send_thread.join();
-        
+
+        SPDLOG_INFO("[pre_start] end.");
 	};
 
     void post_start(Context_ptr context) override
@@ -185,6 +215,7 @@ public:
 	void on_quote(Context_ptr context, const msg::data::Quote &quote) override
 	{
 		SPDLOG_INFO("[on_quote] instrument_id:{} price:{}",quote.instrument_id,quote.ask_price[0]);
+        //cout<<std::this_thread::get_id()<<endl;
 
         auto it = price_map.find(quote.instrument_id);
         if(it != price_map.end()){
@@ -211,7 +242,7 @@ public:
                 }
             }
         }*/
-
+        SPDLOG_INFO("[on_quote] end.");
 	};
 
     /*void on_order(Context_ptr context, const msg::data::Order &order) override
@@ -231,7 +262,7 @@ public:
         return timestamp;
     }
 
-    int RandT(double _min, double _max)
+    int64_t RandT(double _min, double _max)
     { 
         return round(rand() / (double)RAND_MAX *(_max - _min) + _min);
     }
@@ -245,7 +276,7 @@ public:
 
     void Produce_sendset(std::string instrument_id, int64_t volume_per_share)
     {
-        int total_time = period;
+        int64_t total_time = (period-1) * 1e9;
         int total_volume = volume_per_share;
         double expect_times = Expect_times;
         
@@ -254,7 +285,7 @@ public:
         cout<<"start total_times="<<total_times<<endl;
         double per_time = total_time / total_times;
         double per_volume = total_volume / total_times;
-        int this_time = 0;
+        int64_t this_time = 0;
         for(int i=0; i<total_times; i++){
 
             this_time += RandT(0.5*per_time, 1.5*per_time);
@@ -263,7 +294,7 @@ public:
             //cout<<"this_time"<<this_time<<endl;
             //cout<<"this_volume"<<this_volume<<endl;
             
-            int last_time = total_time - this_time;
+            int64_t last_time = total_time - this_time;
             total_volume -= this_volume;
             //cout<<"last_time"<<last_time<<endl;
             
@@ -285,7 +316,7 @@ public:
             send_vec.push_back(sendset);
         }
 
-        /*for(auto it = sendset_vec.begin(); it != sendset_vec.end(); it++){
+        /*for(auto it = send_vec.begin(); it != send_vec.end(); it++){
             SPDLOG_INFO("sendset:{} {}",it->time, it->volume);
         }*/
         //send_map.insert(make_pair(instrument_id, sendset_vec));
@@ -330,27 +361,7 @@ public:
     }*/
 };
 
-void test(){
-    int64_t start_time = time(0);
-    while(1){
-        int64_t now = time(0);
-        if(now - start_time>=2){
-            SPDLOG_INFO(">>>>>>>>>>>2");
-            start_time = now;
-        }
-    }
-}
 
-int main(int argc, const char* argv[]){
-    cout<<"main"<<endl;
-    yijinjing::data::location_ptr home;
-    DemoStrategy demo(home);
-	Context_ptr context;
-    demo.pre_start(context);
-        std::thread send_thread(test);
-        send_thread.join();
-    SPDLOG_INFO("main end");
-}
 
 PYBIND11_MODULE(cpp_demo, m)
 {
