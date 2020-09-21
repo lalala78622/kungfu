@@ -7,6 +7,12 @@
 #include <kungfu/wingchun/strategy/strategy.h>
 #include <kungfu/wingchun/common.h>
 #include <thread>
+#include <string>
+#include <fstream>  
+#include <sstream>
+#include <stdio.h>
+#include <direct.h>
+#include <io.h>
 
 #include "..\..\..\..\utils\rapidjson\include\document.h"
 #include "..\..\..\..\utils\rapidjson\include\writer.h"
@@ -27,6 +33,8 @@ struct SENDSET
     int64_t time;
     int64_t volume;
 };
+
+std::vector<std::string> tickers;
 std::map<std::string, double> price_map;//instrument_id,price
 std::vector<SENDSET> send_vec;
 std::mutex send_mutex;
@@ -86,7 +94,7 @@ void InsertOrder(yijinjing::event_ptr event, Context_ptr context, std::string in
     auto it = price_map.find(instrument_id);
     if(it != price_map.end()){
         SPDLOG_INFO("will buy:{} {} {}",instrument_id, it->second, volume);
-        uint64_t orderid = context->insert_order(it->first, getExchang(it->first), account, it->second, volume, PriceType::Limit, Side::Buy, Offset::Open);
+        //uint64_t orderid = context->insert_order(it->first, getExchang(it->first), account, it->second, volume, PriceType::Limit, Side::Buy, Offset::Open);
     }
 
     auto it2 = send_vec.begin();
@@ -132,6 +140,64 @@ void Init_sendvec(yijinjing::event_ptr event, Context_ptr context){
     SPDLOG_INFO("Init_sendvec end.");
 }
 
+bool file_exist(std::string name) {
+    ifstream f(name.c_str());
+    return f.good();
+}
+void getAllFiles(string path, vector<string>& files)
+{
+    // 文件句柄
+    long hFile = 0;
+    // 文件信息
+    struct _finddata_t fileinfo;
+
+    string p;
+
+    if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1) {
+        do {
+            // 保存文件的全路径
+            files.push_back(p.assign(path).append("\\").append(fileinfo.name));
+
+        } while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
+
+        _findclose(hFile);
+    }
+}
+void InitFile()
+{
+    SPDLOG_INFO("[InitFile]");
+    
+    /*char* buf = _getcwd(NULL, 0);
+    cout << string(buf);*/
+
+    //std::string name = "../app-update.yml";
+    string name = "../../../../../../set/instruct.csv";
+    ifstream inFile(name.c_str(), ios::in);
+    //cout << "file_exist:" << file_exist(name)<<endl;
+    string lineStr;
+    vector<vector<string>> strArray;
+    while (getline(inFile, lineStr))
+    {
+        // 打印整行字符串  
+        //cout << lineStr << endl;
+        // 存成二维表结构  
+        stringstream ss(lineStr);
+        string str;
+        vector<string> lineArray;
+        // 按照逗号分隔  
+        while (getline(ss, str, ','))
+            lineArray.push_back(str);
+        strArray.push_back(lineArray);
+    }
+
+    for(auto it = strArray.begin(); it != strArray.end(); it++){
+        std::string total = (*it)[2];
+        std::string instrument_id = total.substr(0,6);
+        SPDLOG_INFO("instrument_id:{}",instrument_id);
+        tickers.push_back(instrument_id);
+    }
+}
+
 //继承strategy接口，写自己的strategy类
 class DemoStrategy : public Strategy
 {
@@ -141,7 +207,7 @@ private:
     int64_t money_per_share = 1000000;
 
     //std::map<std::string, std::vector<SENDSET>> send_map;//instrument_id,SENDSET
-    std::vector<std::string> tickers;
+    //std::vector<std::string> tickers;
     //static bool start = false;
     //int64_t first_time = 0;
     int64_t period = 600;//s
@@ -157,15 +223,18 @@ public:
 
 	void pre_start(Context_ptr context) override
 	{
-        tickers.push_back("000002"); tickers.push_back("000004");tickers.push_back("000005"); tickers.push_back("000006");
+        /*tickers.push_back("000002"); tickers.push_back("000004");tickers.push_back("000005"); tickers.push_back("000006");
         tickers.push_back("000007"); tickers.push_back("000008");tickers.push_back("000009"); tickers.push_back("000010");
         tickers.push_back("000011"); tickers.push_back("000012");tickers.push_back("600004"); tickers.push_back("600006");
         tickers.push_back("600007"); tickers.push_back("600008");tickers.push_back("600009"); tickers.push_back("600010");
-        tickers.push_back("600011"); tickers.push_back("600012");tickers.push_back("600015"); tickers.push_back("600016");
+        tickers.push_back("600011"); tickers.push_back("600012");tickers.push_back("600015"); tickers.push_back("600016");*/
 
 		SPDLOG_INFO("[pre_start]");
         //cout<<std::this_thread::get_id()<<endl;
         srand((unsigned)time(NULL));
+
+        InitFile();
+
         std::vector<std::string> sse_tickers; std::vector<std::string> sze_tickers;
         for(auto it = tickers.begin(); it != tickers.end(); it++){
             if((*it).substr(0,1) == "6"){
@@ -277,7 +346,7 @@ public:
     void Produce_sendset(std::string instrument_id, int64_t volume_per_share)
     {
         int64_t total_time = (period-1) * 1e9;
-        int total_volume = volume_per_share;
+        int64_t total_volume = volume_per_share;
         double expect_times = Expect_times;
         
         //std::vector<SENDSET> sendset_vec;
