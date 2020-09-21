@@ -35,6 +35,7 @@ struct SENDSET
 };
 
 std::vector<std::string> tickers;
+std::map<std::string, double> volume_map;//instrument_id,volume
 std::map<std::string, double> price_map;//instrument_id,price
 std::vector<SENDSET> send_vec;
 std::mutex send_mutex;
@@ -124,6 +125,9 @@ void Init_sendvec(yijinjing::event_ptr event, Context_ptr context){
     for (auto it = send_vec.begin(); it != send_vec.end(); it++) {
         SPDLOG_INFO("time:{} instrument_id:{} volume:{}", it->time, it->instrument_id, it->volume);
     }*/
+    if(send_vec.size() == 0){
+        context->add_timer(context->now() + 15*1000000000, std::bind(Init_sendvec, std::placeholders::_1, context));
+    }
 
     auto it = send_vec.begin();
     if(it != send_vec.end()){
@@ -193,8 +197,11 @@ void InitFile()
     for(auto it = strArray.begin(); it != strArray.end(); it++){
         std::string total = (*it)[2];
         std::string instrument_id = total.substr(0,6);
-        SPDLOG_INFO("instrument_id:{}",instrument_id);
+        //SPDLOG_INFO("instrument_id:{}",instrument_id);
         tickers.push_back(instrument_id);
+        double dvolume_per_share = stod((*it)[3]);
+        //SPDLOG_INFO("dvolume_per_share:{}",dvolume_per_share);
+        volume_map.insert(make_pair(instrument_id, dvolume_per_share));
     }
 }
 
@@ -261,7 +268,7 @@ public:
     void post_start(Context_ptr context) override
     {
         SPDLOG_INFO("[post_start]");
-        context->add_timer(context->now() + 15*1000000000, std::bind(Init_sendvec, std::placeholders::_1, context));
+        context->add_timer(context->now() + 30*1000000000, std::bind(Init_sendvec, std::placeholders::_1, context));
         //std::thread send_thread(&DemoStrategy::random_insert, this);
         //send_thread.join();
         SPDLOG_INFO("[post_start] end.");
@@ -291,7 +298,12 @@ public:
             it->second = quote.ask_price[0];
         }
         else{
-            double dvolume_per_share = double(money_per_share) / quote.ask_price[0];
+            double dvolume_per_share = 0;
+            auto it2 = volume_map.find(quote.instrument_id);
+            if(it2 != volume_map.end()){
+                dvolume_per_share = it2->second;
+            }
+            //double dvolume_per_share = double(money_per_share) / quote.ask_price[0];
             //SPDLOG_INFO("dvolume_per_share:{}", dvolume_per_share);
             int64_t volume_per_share = floor(dvolume_per_share/100) * 100;
             SPDLOG_INFO("price_map instrument_id:{} volume_per_share:{}", quote.instrument_id, volume_per_share);
