@@ -7,6 +7,9 @@
         <tr-dashboard-header-item>
             <el-button size="mini" @click="handleAddStrategy" title="添加">添加</el-button>
         </tr-dashboard-header-item>
+        <!--<tr-dashboard-header-item>
+            <el-button size="mini" @click="handleAddStrategy" title="配置参数">配置参数</el-button>
+        </tr-dashboard-header-item>-->
     </div>
     <div class="table-body">
         <el-table
@@ -101,6 +104,40 @@
                  ></el-input>
             </el-form-item>
             <el-form-item
+                label="BeginTime"
+                prop="strategyBeginTime"
+                :rules="[
+                { required: false, message: '请输入开始时间', trigger: 'blur' },
+                { min: 1, max: 19, message: '2020-09-22 11:15:00', trigger: 'blur' },
+                {validator: chineseValidator, trigger: 'blur'},
+                {validator: specialStrValidator, trigger: 'blur'},
+                {validator: noZeroAtFirstValidator, trigger: 'blur'}
+                ]"
+            >
+                <el-input 
+                v-model.trim="setStrategyForm.strategyBeginTime" 
+                :disabled="setStrategyDialogType == 'set'"
+                 placeholder="请输入开始时间"
+                 ></el-input>
+            </el-form-item>
+            <el-form-item
+                label="EndTime"
+                prop="strategyEndTime"
+                :rules="[
+                { required: false, message: '请输入结束时间', trigger: 'blur' },
+                { min: 1, max: 19, message: '2020-09-22 11:15:00', trigger: 'blur' },
+                {validator: chineseValidator, trigger: 'blur'},
+                {validator: specialStrValidator, trigger: 'blur'},
+                {validator: noZeroAtFirstValidator, trigger: 'blur'}
+                ]"
+            >
+                <el-input 
+                v-model.trim="setStrategyForm.strategyEndTime" 
+                :disabled="setStrategyDialogType == 'set'"
+                 placeholder="请输入结束时间"
+                 ></el-input>
+            </el-form-item>
+            <el-form-item
             label="入口文件"
             prop="strategyPath"
             :rules="[
@@ -146,6 +183,8 @@ export default {
             setStrategyForm: {
                 strategyId: '',
                 strategyPath: "",
+                strategyBeginTime: '',
+                strategyEndTime: '',
             },
             renderTable: false,
         }
@@ -256,6 +295,8 @@ export default {
             t.setStrategyDialogType = 'set'
             t.setStrategyForm = {
                 strategyId: row.strategy_id,
+                strategyBeginTime: row.strategyBeginTime,
+                strategyEndTime: row.strategyEndTime,
                 strategyPath: row.strategy_path
             }
         },
@@ -267,6 +308,8 @@ export default {
                 if(valid){
                     const strategy = t.setStrategyForm.strategyId.toString();
                     const strategyPath = t.setStrategyForm.strategyPath;
+                    const strategyBeginTime = t.setStrategyForm.strategyBeginTime.toString();
+                    const strategyEndTime = t.setStrategyForm.strategyEndTime.toString();
                     let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
                     if(t.setStrategyDialogType === 'add'){
                         firstStepPromise = t.$confirm(`添加后策略ID不能更改，确认添加 ${strategy} 吗？`, '提示', {
@@ -278,6 +321,7 @@ export default {
                         //判断是添加还是修改数据库内容
                         const strategyMethod = t.setStrategyDialogType === 'add' ? STRATEGY_API.addStrategy : STRATEGY_API.updateStrategyPath
                         strategyMethod(strategy, strategyPath)
+                        //strategyMethod(strategy,strategyBeginTime,strategyEndTime, strategyPath)
                         .then(() => t.getStrategyList())//get new list
                         .then(() => {
                             t.$message.success((t.setStrategyDialogType === 'add'? '添加' : '修改') + '成功！')
@@ -304,7 +348,7 @@ export default {
         //关闭添加strategy弹窗, refresh数据
         handleClearAddStrategyDialog(){
             const t = this;
-            t.setStrategyForm = { strategyId: '', strategyPath: '' };
+            t.setStrategyForm = { strategyId: '', strategyPath: '' , strategyBeginTime: '' , strategyEndTime: ''};
             t.setStrategyDialogVisiblity = false;
             t.setStrategyDialogType = ''
         },
