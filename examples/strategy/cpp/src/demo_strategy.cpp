@@ -25,6 +25,12 @@ using namespace kungfu::wingchun;
 using namespace kungfu::wingchun::strategy;
 using namespace std;
 
+using rapidjson::Document;
+using rapidjson::SizeType;
+using rapidjson::Value;
+using rapidjson::Writer;
+using rapidjson::StringBuffer;
+
 std::string account = "15015255";
 
 struct SENDSET
@@ -41,6 +47,9 @@ std::vector<SENDSET> send_vec;
 std::mutex send_mutex;
 bool start = false;
 int64_t first_time = 0;
+int64_t begin_timestamp = 0;
+int64_t period = 600;//s
+int Expect_times = 120;
 
 /*void test(){
     cout<<"test-----"<<endl;
@@ -95,7 +104,7 @@ void InsertOrder(yijinjing::event_ptr event, Context_ptr context, std::string in
     auto it = price_map.find(instrument_id);
     if(it != price_map.end()){
         SPDLOG_INFO("will buy:{} {} {}",instrument_id, it->second, volume);
-        //uint64_t orderid = context->insert_order(it->first, getExchang(it->first), account, it->second, volume, PriceType::Limit, Side::Buy, Offset::Open);
+        uint64_t orderid = context->insert_order(it->first, getExchang(it->first), account, it->second, volume, PriceType::Limit, Side::Buy, Offset::Open);
     }
 
     auto it2 = send_vec.begin();
@@ -119,6 +128,7 @@ void InsertOrder(yijinjing::event_ptr event, Context_ptr context, std::string in
 void Init_sendvec(yijinjing::event_ptr event, Context_ptr context){
     SPDLOG_INFO("Init_sendvec");
     sort(send_vec.begin(), send_vec.end(), comp);
+    SPDLOG_INFO("sort");
     //start = true;
     //first_time = context->now();
     /*cout << "===========排序后================" << endl;
@@ -204,6 +214,58 @@ void InitFile()
         volume_map.insert(make_pair(instrument_id, dvolume_per_share));
     }
 }
+string readfile(const char *filename){
+    FILE *fp = fopen(filename, "rb");
+    if(!fp){
+        printf("open failed! file: %s", filename);
+        return "";
+    }
+    
+    char *buf = new char[1024*16];
+    int n = fread(buf, 1, 1024*16, fp);
+    fclose(fp);
+    
+    string result;
+    if(n>=0){
+        result.append(buf, 0, n);
+    }
+    delete []buf;
+    return result;
+}
+int64_t formatISO8601_to_timestamp(std::string time)
+{
+    //extern long timezone;  
+    int year,month,day,hour,min,sec,millsec;
+    sscanf_s(time.c_str(),"%04d-%02d-%02d %02d:%02d:%02d",&year,&month,&day,&hour,&min,&sec);
+    tm utc_time{};
+    utc_time.tm_year = year - 1900;
+    utc_time.tm_mon = month -1;
+    utc_time.tm_mday = day;
+    utc_time.tm_hour = hour;
+    utc_time.tm_min = min;
+    utc_time.tm_sec = sec;
+    time_t timet = mktime(&utc_time);
+    //tzset();
+    
+    //return (timet-timezone)*1000+millsec;
+    return timet;
+}
+void SetConfig()
+{
+    SPDLOG_INFO("[SetConfig]");
+    std::string config = readfile("../../../../../../set/config.json");
+    Document json;
+    json.Parse(config.c_str());
+    std::string beginTime = json["beginTime"].GetString();
+    begin_timestamp = formatISO8601_to_timestamp(beginTime);
+    std::string endTime = json["endTime"].GetString();
+    int64_t end_timestamp = formatISO8601_to_timestamp(endTime);
+    
+    period = end_timestamp - begin_timestamp;
+    Expect_times = period / 5;
+    SPDLOG_INFO("beginTime:{} endTime:{} period:{} Expect_times:{}", begin_timestamp, end_timestamp, period, Expect_times);
+
+}
 
 //继承strategy接口，写自己的strategy类
 class DemoStrategy : public Strategy
@@ -217,8 +279,8 @@ private:
     //std::vector<std::string> tickers;
     //static bool start = false;
     //int64_t first_time = 0;
-    int64_t period = 600;//s
-    int Expect_times = 120;
+    //int64_t period = 600;//s
+    //int Expect_times = 120;
 
 public:
 	DemoStrategy(yijinjing::data::location_ptr home)
@@ -240,6 +302,7 @@ public:
         //cout<<std::this_thread::get_id()<<endl;
         srand((unsigned)time(NULL));
 
+        SetConfig();
         InitFile();
 
         std::vector<std::string> sse_tickers; std::vector<std::string> sze_tickers;
@@ -268,9 +331,12 @@ public:
     void post_start(Context_ptr context) override
     {
         SPDLOG_INFO("[post_start]");
-        context->add_timer(context->now() + 30*1000000000, std::bind(Init_sendvec, std::placeholders::_1, context));
+        int64_t addtime = begin_timestamp * 1e9 - context->now();
+        SPDLOG_INFO("addtime={}",addtime);
+        context->add_timer(context->now() + addtime, std::bind(Init_sendvec, std::placeholders::_1, context));
         //std::thread send_thread(&DemoStrategy::random_insert, this);
         //send_thread.join();
+        //context->send_msg("hahaha");
         SPDLOG_INFO("[post_start] end.");
     }
 
