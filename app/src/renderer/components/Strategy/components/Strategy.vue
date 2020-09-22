@@ -320,8 +320,8 @@ export default {
                     firstStepPromise.then(() => {
                         //判断是添加还是修改数据库内容
                         const strategyMethod = t.setStrategyDialogType === 'add' ? STRATEGY_API.addStrategy : STRATEGY_API.updateStrategyPath
-                        strategyMethod(strategy, strategyPath)
-                        //strategyMethod(strategy,strategyBeginTime,strategyEndTime, strategyPath)
+                        //strategyMethod(strategy, strategyPath)
+                        strategyMethod(strategy,strategyBeginTime,strategyEndTime, strategyPath)
                         .then(() => t.getStrategyList())//get new list
                         .then(() => {
                             t.$message.success((t.setStrategyDialogType === 'add'? '添加' : '修改') + '成功！')

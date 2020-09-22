@@ -26,9 +26,9 @@ export const getStrategyById = (id: string) => {
  * @param {String} id 交易任务名 
  */
 
-export const addStrategy = (strategy_id: string, strategy_path: string) => {
+export const addStrategy = (strategy_id: string,strategyBeginTime: string,strategyEndTime: string, strategy_path: string) => {
     const addTime = +new Date().getTime() * Math.pow(10,6)
-    return runInsertUpdateDeleteDB(STRATEGYS_DB, 'INSERT INTO strategys(strategy_id, strategy_path, add_time) VALUES (?, ?, ?)', [strategy_id, strategy_path || null, addTime])
+    return runInsertUpdateDeleteDB(STRATEGYS_DB, 'INSERT INTO strategys(strategy_id,strategyBeginTime,strategyEndTime, strategy_path, add_time) VALUES (?, ?, ?, ?, ?)', [strategy_id,strategyBeginTime,strategyEndTime, strategy_path || null, addTime])
 }
 
 /**
@@ -44,8 +44,8 @@ export const deleteStrategy = (strategy_id: string) => {
  * @param  {String} strategy_id
  * @param  {String} strategy_path
  */
-export const updateStrategyPath = (strategy_id: string, strategy_path: string) => {
-    return runInsertUpdateDeleteDB(STRATEGYS_DB, 'UPDATE strategys SET strategy_path = ? WHERE strategy_id = ?', [strategy_path, strategy_id])    
+export const updateStrategyPath = (strategy_id: string,strategyBeginTime: string,strategyEndTime: string, strategy_path: string) => {
+    return runInsertUpdateDeleteDB(STRATEGYS_DB, 'UPDATE strategys SET strategy_path = ? WHERE strategy_id = ? d=? ?', [strategy_path, strategy_id,strategyBeginTime,strategyEndTime])    
 }
 
 

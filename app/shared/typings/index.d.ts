@@ -61,6 +61,8 @@ interface Account {
 interface Strategy {
     strategy_id: string;
     strategy_path: string;
+    strategyBeginTime: string;
+    strategyEndTime: string;
     add_time: number;
 }
 
