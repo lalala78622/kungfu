@@ -4,9 +4,21 @@
 
 #include <utility>
 #include <kungfu/yijinjing/log/setup.h>
+#include <fstream> 
+#include <iostream>
 #include "marketdata_xtp.h"
 #include "serialize_xtp.h"
 #include "type_convert_xtp.h"
+#include "..\..\..\..\utils\rapidjson\include\document.h"
+#include "..\..\..\..\utils\rapidjson\include\writer.h"
+#include "..\..\..\..\utils\rapidjson\include\stringbuffer.h"
+
+using rapidjson::Document;
+using rapidjson::SizeType;
+using rapidjson::Value;
+using rapidjson::Writer;
+using rapidjson::StringBuffer;
+using namespace std; 
 
 namespace kungfu
 {
@@ -42,7 +54,21 @@ namespace kungfu
             void MarketDataXTP::create_configfile(std::string begin_time, std::string end_time)
             {
                 SPDLOG_INFO("[create_configfile] {}-{}", begin_time, end_time);
-                
+
+                StringBuffer sbL2Update;
+                Writer<StringBuffer> writer(sbL2Update);
+                writer.StartObject();
+                writer.Key("beginTime");
+                writer.String(begin_time.c_str());
+                writer.Key("endTime");
+                writer.String(end_time.c_str());
+                std::string jsonstr = sbL2Update.GetString();
+                jsonstr += "}";
+                SPDLOG_INFO("jsonstr:{}",jsonstr);
+
+                ofstream out("twap.json");
+                out<< jsonstr <<endl;
+                out.close();
             }
 
             void MarketDataXTP::on_start()
