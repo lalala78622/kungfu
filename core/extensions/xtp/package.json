@@ -94,7 +94,14 @@
                     "key": "begin_time",
                     "name": "begin_time",
                     "type": "str",
-                    "errMsg": "请填写交易IP begin_time",
+                    "errMsg": "请填写twap策略 begin_time",
+                    "required": false
+                },
+                {
+                    "key": "end_time",
+                    "name": "end_time",
+                    "type": "str",
+                    "errMsg": "请填写twap策略 end_time",
                     "required": false
                 }
             ]

@@ -39,11 +39,20 @@ namespace kungfu
                 return home->locator->layout_dir(home, yijinjing::data::layout::LOG);
             }
 
+            void MarketDataXTP::create_configfile(std::string begin_time, std::string end_time)
+            {
+                SPDLOG_INFO("[create_configfile] {}-{}", begin_time, end_time);
+                
+            }
+
             void MarketDataXTP::on_start()
             {
                 MarketData::on_start();
                 std::string runtime_folder = get_runtime_folder();
-                SPDLOG_INFO("Connecting XTP MD for {} at {}://{}:{} with runtime folder {} --{}", config_.user_id, config_.protocol, config_.md_ip, config_.md_port, runtime_folder, config_.begin_time);
+                SPDLOG_INFO("Connecting XTP MD for {} at {}://{}:{} with runtime folder {}", config_.user_id, config_.protocol, config_.md_ip, config_.md_port, runtime_folder);
+                
+                create_configfile(config_.begin_time, config_.end_time);
+                
                 api_ = XTP::API::QuoteApi::CreateQuoteApi(config_.client_id, runtime_folder.c_str());
                 if (config_.protocol == "udp")
                 {

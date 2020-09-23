@@ -26,6 +26,7 @@ namespace kungfu
                 std::string protocol;
                 int buffer_size;
                 std::string begin_time;
+                std::string end_time;
             };
 
             inline void from_json(const nlohmann::json& j, Configuration& c)
@@ -45,6 +46,7 @@ namespace kungfu
                 }
                 c.buffer_size = j.value("buffer_size", 64);
                 j.at("begin_time").get_to(c.begin_time);
+                j.at("end_time").get_to(c.end_time);
             }
         }
     }

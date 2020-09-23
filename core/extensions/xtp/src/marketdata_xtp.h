@@ -218,6 +218,7 @@ namespace kungfu
                 XTP::API::QuoteApi *api_;
                 std::string get_runtime_folder() const;
                 bool subscribe(const std::vector<std::string> &instruments, const std::string &exchange_id);
+                void create_configfile(std::string begin_time, std::string end_time);
             };
         }
     }
