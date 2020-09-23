@@ -43,7 +43,7 @@ namespace kungfu
             {
                 MarketData::on_start();
                 std::string runtime_folder = get_runtime_folder();
-                SPDLOG_INFO("Connecting XTP MD for {} at {}://{}:{} with runtime folder {}", config_.user_id, config_.protocol, config_.md_ip, config_.md_port, runtime_folder);
+                SPDLOG_INFO("Connecting XTP MD for {} at {}://{}:{} with runtime folder {} --{}", config_.user_id, config_.protocol, config_.md_ip, config_.md_port, runtime_folder, config_.begin_time);
                 api_ = XTP::API::QuoteApi::CreateQuoteApi(config_.client_id, runtime_folder.c_str());
                 if (config_.protocol == "udp")
                 {

@@ -89,6 +89,13 @@
                     "errMsg": "请填写 buffer size（mb）",
                     "validator": ["intValidator"],                    
                     "required": false
+                },
+                {
+                    "key": "begin_time",
+                    "name": "begin_time",
+                    "type": "str",
+                    "errMsg": "请填写交易IP begin_time",
+                    "required": false
                 }
             ]
         }
