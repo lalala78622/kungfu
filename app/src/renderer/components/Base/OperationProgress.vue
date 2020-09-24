@@ -1,5 +1,5 @@
 <template>
-<tr-dashboard :title="filter.dateRange ? '历史成交' : '当日成交'">
+<tr-dashboard :title="策略完成进度">
     <div slot="dashboard-header">
         <tr-dashboard-header-item>
             <tr-search-input v-model.trim="searchKeyword"></tr-search-input>
@@ -99,10 +99,6 @@ export default {
                 label: '开平',
                 prop: 'offset',
                 width: '50px'
-            },{
-                type: 'number',
-                label: '成交价',
-                prop: 'price',
             },{
                 type: 'number',
                 label: '成交量',
