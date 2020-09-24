@@ -52,13 +52,13 @@
                             ></TradeRecord>
                     </el-row>
                     <el-row style="height: 25%">
-                            <TradeRecord 
+                            <OperationProgress 
                             ref="trade-record"
                             :currentId="strategyId"
                             moduleType="strategy"
                             :getDataMethod="getStrategyTrade"
                             :nanomsgBackData="tradesFromNmsg"
-                            ></TradeRecord>
+                            ></OperationProgress>
                     </el-row>
                 </el-col>
 
@@ -70,6 +70,7 @@ import Strategy from './components/Strategy';
 import Log from './components/Log';
 import CurrentOrder from '../Base/CurrentOrder';
 import TradeRecord from '../Base/TradeRecord';
+import OperationProgress from '../Base/OperationProgress';
 import Pos from '../Base/Pos';
 import Pnl from '../Base/pnl/Index';
 import { mapState, mapGetters } from 'vuex';
@@ -134,7 +135,7 @@ export default {
     },
 
     components: {
-        Strategy, CurrentOrder, TradeRecord, Pos, Log, Pnl 
+        Strategy, CurrentOrder, TradeRecord, Pos, Log, Pnl, OperationProgress 
     },
 
     methods:{
