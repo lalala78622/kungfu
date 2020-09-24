@@ -28,7 +28,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import moment from 'moment'
-import { debounce, throttleInsert, dealTrade } from "__gUtils/busiUtils"
+import { debounce, throttleInsert, dealTrades } from "__gUtils/busiUtils"
 import { writeCSV } from '__gUtils/fileUtils';
 import DateRangeDialog from './DateRangeDialog';
 
@@ -220,7 +220,7 @@ export default {
         dealData(data) {
             const t = this
             const historyData = data || []
-            const tableData = historyData.map(item => dealTrade(item))
+            const tableData = historyData.map(item => dealTrades(item))
             return tableData
         },
 
@@ -234,7 +234,7 @@ export default {
             const { trade_time } = data
             if(!((data.instrument_id.includes(id) || data.client_id.includes(id)) )) return
             const tradeData = {
-                ...dealTrade(data),
+                ...dealTrades(data),
                 nano: true
             }
             t.throttleInsertTrade(tradeData).then(tradeList => {

@@ -433,6 +433,22 @@ export const dealTrade = (item: TradeInputData): TradeData => {
     }     
 }
 
+export const dealTrades = (item: TradeInputData): TradeData => {
+    const updateTime = item.trade_time || item.update_time || 0;
+    return {
+        id: [(item.rowid || '').toString(), item.account_id.toString(), item.trade_id.toString(), updateTime.toString()].join('_'),
+        updateTime: updateTime && moment(+updateTime / 1000000).format('YYYY-MM-DD HH:mm:ss'),
+        updateTimeNum: +updateTime,
+        instrumentId: item.instrument_id,
+        side: sideName[item.side],
+        offset: offsetName[item.offset],
+        price: toDecimal(+item.price, 3),
+        volume: toDecimal(+item.volume, 0),
+        clientId: item.client_id,
+        accountId: item.account_id
+    }     
+}
+
 export const dealPos = (item: PosInputData): PosData => {
     //item.type :'0': 未知, '1': 股票, '2': 期货, '3': 债券
     const direction: string = posDirection[item.direction] || '--';
