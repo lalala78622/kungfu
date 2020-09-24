@@ -165,6 +165,20 @@ interface TradeInputData {
     [propName: string]: any;
 }
 
+interface TradesData {
+    id: string;
+    instrumentId: string;
+    updateTime: string;
+    updateTimeNum: number;
+    side: string;
+    offset: string;
+    price: string;
+    volume: string;
+    volume_total: string;
+    clientId: string;
+    accountId: string;
+}
+
 interface AssetInputData {
     account_id: string;
     source_id: string;

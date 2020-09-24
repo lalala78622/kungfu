@@ -99,6 +99,10 @@ export default {
                 label: '成交量',
                 prop: 'volume',
             },{
+                type: 'number',
+                label: '总量',
+                prop: 'volume_total',
+            },{
                 type: 'text',
                 label: this.moduleType == 'account' ? '策略': '账户',
                 prop: this.moduleType == 'account' ? 'clientId': 'accountId',

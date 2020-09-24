@@ -433,7 +433,7 @@ export const dealTrade = (item: TradeInputData): TradeData => {
     }     
 }
 
-export const dealTrades = (item: TradeInputData): TradeData => {
+export const dealTrades = (item: TradeInputData): TradesData => {
     const updateTime = item.trade_time || item.update_time || 0;
     return {
         id: [(item.rowid || '').toString(), item.account_id.toString(), item.trade_id.toString(), updateTime.toString()].join('_'),
@@ -443,7 +443,8 @@ export const dealTrades = (item: TradeInputData): TradeData => {
         side: sideName[item.side],
         offset: offsetName[item.offset],
         price: toDecimal(+item.price, 3),
-        volume: "1",
+        volume: toDecimal(+item.volume, 0),
+        volume_total: "1000",
         clientId: item.client_id,
         accountId: item.account_id
     }     
