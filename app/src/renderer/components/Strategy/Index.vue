@@ -24,7 +24,7 @@
                     </el-row>
                 </el-col>
                 <el-col  :span="10">
-                    <el-row style="height: 33.333%">
+                    <el-row style="height: 25%">
                             <Pos
                             ref="pos"
                             :currentId="strategyId"
@@ -33,7 +33,7 @@
                             :nanomsgBackData="posFromNmsg"                   
                             ></Pos>
                     </el-row>
-                    <el-row  style="height: 33.333%">
+                    <el-row  style="height: 25%">
                             <CurrentOrder
                             ref="current-order"
                             :currentId="strategyId"
@@ -42,7 +42,16 @@
                             :nanomsgBackData="ordersFromNmsg"
                             ></CurrentOrder>                      
                     </el-row>
-                    <el-row style="height: 33.333%">
+                    <el-row style="height: 25%">
+                            <TradeRecord 
+                            ref="trade-record"
+                            :currentId="strategyId"
+                            moduleType="strategy"
+                            :getDataMethod="getStrategyTrade"
+                            :nanomsgBackData="tradesFromNmsg"
+                            ></TradeRecord>
+                    </el-row>
+                    <el-row style="height: 25%">
                             <TradeRecord 
                             ref="trade-record"
                             :currentId="strategyId"
