@@ -1,5 +1,5 @@
 <template>
-<tr-dashboard :title="策略完成进度">
+<tr-dashboard title="策略完成进度">
     <div slot="dashboard-header">
         <tr-dashboard-header-item>
             <tr-search-input v-model.trim="searchKeyword"></tr-search-input>
@@ -80,11 +80,6 @@ export default {
 
         schema(){
             return [{
-                type: 'text',
-                label: '成交时间',
-                prop: 'updateTime',
-                width: '160px'
-            },{
                 type: 'text',
                 label: '代码',
                 prop: 'instrumentId',

@@ -443,7 +443,7 @@ export const dealTrades = (item: TradeInputData): TradeData => {
         side: sideName[item.side],
         offset: offsetName[item.offset],
         price: toDecimal(+item.price, 3),
-        volume: toDecimal(+item.volume, 0),
+        volume: "1",
         clientId: item.client_id,
         accountId: item.account_id
     }     
