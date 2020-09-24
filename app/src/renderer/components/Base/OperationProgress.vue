@@ -81,6 +81,11 @@ export default {
         schema(){
             return [{
                 type: 'text',
+                label: '成交时间',
+                prop: 'updateTime',
+                width: '160px'
+            },{
+                type: 'text',
                 label: '代码',
                 prop: 'instrumentId',
                 width: '80px'
@@ -237,7 +242,8 @@ export default {
                 let oldTableData = t.tableData;
                 oldTableData = [...tradeList, ...oldTableData]
                 //更新数据
-                t.tableData = Object.freeze(oldTableData)
+                //t.tableData = Object.freeze(oldTableData)
+                t.tableData = tradeList
             })
            
         },
