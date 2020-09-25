@@ -31,6 +31,7 @@ import moment from 'moment'
 import { debounce, throttleInsert, dealTrades } from "__gUtils/busiUtils"
 import { writeCSV } from '__gUtils/fileUtils';
 import DateRangeDialog from './DateRangeDialog';
+import { offsetName, orderStatus, sideName, posDirection } from "__gConfig/tradingConfig";
 
 export default {
     name: 'trades-record',
@@ -81,11 +82,6 @@ export default {
         schema(){
             return [{
                 type: 'text',
-                label: '成交时间',
-                prop: 'updateTime',
-                width: '160px'
-            },{
-                type: 'text',
                 label: '代码',
                 prop: 'instrumentId',
                 width: '80px'
@@ -107,10 +103,6 @@ export default {
                 type: 'number',
                 label: '总量',
                 prop: 'volume_total',
-            },{
-                type: 'text',
-                label: this.moduleType == 'account' ? '策略': '账户',
-                prop: this.moduleType == 'account' ? 'clientId': 'accountId',
             }]
         }
     },
@@ -212,7 +204,21 @@ export default {
                     t.tableData = Object.freeze([])
                     return;
                 }
-                t.tableData = Object.freeze(t.dealData(res))
+                //writeCSV("a.csv", res)
+                //t.tableData = Object.freeze(t.dealData(res))
+                t.tableData = Object.freeze([{
+                                    id: "no",
+                                    updateTime: "no",
+                                    updateTimeNum: 12,
+                                    instrumentId: "1",
+                                    side: sideName[res[0].side],
+                                    offset: offsetName[res[0].offset],
+                                    price: "no",
+                                    volume: "1",
+                                    volume_total: "1000",
+                                    clientId: "no",
+                                    accountId: "no"
+                                }])
             }).finally(() => t.getDataLock = false)
         },
 
@@ -243,7 +249,20 @@ export default {
                 oldTableData = [...tradeList, ...oldTableData]
                 //更新数据
                 //t.tableData = Object.freeze(oldTableData)
-                t.tableData = tradeList
+                //t.tableData = tradeList
+                t.tableData = Object.freeze([{
+                                    id: "1",
+                                    updateTime: "1",
+                                    updateTimeNum: 12,
+                                    instrumentId: "1",
+                                    side: "1",
+                                    offset: "1",
+                                    price: "1",
+                                    volume: "1",
+                                    volume_total: "1000",
+                                    clientId: "1",
+                                    accountId: "1"
+                                }])
             })
            
         },
