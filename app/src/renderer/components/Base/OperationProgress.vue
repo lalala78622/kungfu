@@ -257,9 +257,9 @@ export default {
                 //t.tableData = Object.freeze(oldTableData)
                 //t.tableData = tradeList
                 let add_up = 0
-                for(let i = 0; i < res.length; i++)
+                for(let i = 0; i < oldTableData.length; i++)
                 {
-                    add_up += Number(res[i].volume)
+                    add_up += Number(oldTableData[i].volume)
                 }
 
                 t.tableData = Object.freeze([{
