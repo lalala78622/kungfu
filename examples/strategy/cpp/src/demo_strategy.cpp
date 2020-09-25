@@ -177,6 +177,16 @@ void getAllFiles(string path, vector<string>& files)
         _findclose(hFile);
     }
 }
+void WriteTXT(std::string instrument_id, std::string volume)
+{
+    std::string command = "mkdir twap";
+    system(command.c_str());
+
+    std::string route = "twap/" + instrument_id + ".txt";
+    ofstream OutFile(route.c_str());
+    OutFile << volume;
+    OutFile.close();
+}
 void InitFile()
 {
     SPDLOG_INFO("[InitFile]");
@@ -211,6 +221,7 @@ void InitFile()
         tickers.push_back(instrument_id);
         double dvolume_per_share = stod((*it)[3]);
         //SPDLOG_INFO("dvolume_per_share:{}",dvolume_per_share);
+		WriteTXT(instrument_id, (*it)[3]);
         volume_map.insert(make_pair(instrument_id, dvolume_per_share));
     }
 }
