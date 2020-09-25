@@ -206,15 +206,21 @@ export default {
                 }
                 //writeCSV("a.csv", res)
                 //t.tableData = Object.freeze(t.dealData(res))
+                let add_up = 0
+                for(let i = 0; i < res.length; i++)
+                {
+                    add_up += Number(res[i].volume)
+                }
+
                 t.tableData = Object.freeze([{
                                     id: "no",
                                     updateTime: "no",
                                     updateTimeNum: 12,
-                                    instrumentId: "1",
+                                    instrumentId: res[0].instrument_id,
                                     side: sideName[res[0].side],
                                     offset: offsetName[res[0].offset],
                                     price: "no",
-                                    volume: "1",
+                                    volume: add_up.toString(),
                                     volume_total: "1000",
                                     clientId: "no",
                                     accountId: "no"
@@ -250,18 +256,24 @@ export default {
                 //更新数据
                 //t.tableData = Object.freeze(oldTableData)
                 //t.tableData = tradeList
+                let add_up = 0
+                for(let i = 0; i < res.length; i++)
+                {
+                    add_up += Number(res[i].volume)
+                }
+
                 t.tableData = Object.freeze([{
-                                    id: "1",
-                                    updateTime: "1",
+                                    id: "no",
+                                    updateTime: "no",
                                     updateTimeNum: 12,
-                                    instrumentId: "1",
-                                    side: "1",
-                                    offset: "1",
-                                    price: "1",
-                                    volume: "1",
+                                    instrumentId: oldTableData[0].instrument_id,
+                                    side: sideName[oldTableData[0].side],
+                                    offset: offsetName[oldTableData[0].offset],
+                                    price: "no",
+                                    volume: add_up.toString(),
                                     volume_total: "1000",
-                                    clientId: "1",
-                                    accountId: "1"
+                                    clientId: "no",
+                                    accountId: "no"
                                 }])
             })
            
