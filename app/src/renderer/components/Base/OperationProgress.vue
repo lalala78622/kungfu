@@ -32,6 +32,7 @@ import { debounce, throttleInsert, dealTrades } from "__gUtils/busiUtils"
 import { writeCSV } from '__gUtils/fileUtils';
 import DateRangeDialog from './DateRangeDialog';
 import { offsetName, orderStatus, sideName, posDirection } from "__gConfig/tradingConfig";
+const fs=require('fs');
 
 export default {
     name: 'trades-record',
@@ -206,25 +207,35 @@ export default {
                 }
                 //writeCSV("a.csv", res)
                 //t.tableData = Object.freeze(t.dealData(res))
-                let add_up = 0
-                for(let i = 0; i < res.length; i++)
-                {
-                    add_up += Number(res[i].volume)
-                }
+                
+                let filename = res[0].instrument_id + ".txt"
+                fs.readFile(filename, 'utf-8', function(err, data){
+                    if(err){
+                        console.error(err);
+                    }else{
+                        window.alert(data.toString())
 
-                t.tableData = Object.freeze([{
-                                    id: "no",
-                                    updateTime: "no",
-                                    updateTimeNum: 12,
-                                    instrumentId: res[0].instrument_id,
-                                    side: sideName[res[0].side],
-                                    offset: offsetName[res[0].offset],
-                                    price: "no",
-                                    volume: add_up.toString(),
-                                    volume_total: "1000",
-                                    clientId: "no",
-                                    accountId: "no"
-                                }])
+                        let add_up = 0
+                        for(let i = 0; i < res.length; i++)
+                        {
+                            add_up += Number(res[i].volume)
+                        }
+
+                        t.tableData = Object.freeze([{
+                                            id: "no",
+                                            updateTime: "no",
+                                            updateTimeNum: 12,
+                                            instrumentId: res[0].instrument_id,
+                                            side: sideName[res[0].side],
+                                            offset: offsetName[res[0].offset],
+                                            price: "no",
+                                            volume: add_up.toString(),
+                                            volume_total: data.toString(),
+                                            clientId: "no",
+                                            accountId: "no"
+                                        }])
+                    }
+                })                
             }).finally(() => t.getDataLock = false)
         },
 
