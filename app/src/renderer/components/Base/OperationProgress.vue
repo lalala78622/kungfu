@@ -209,7 +209,7 @@ export default {
                 //t.tableData = Object.freeze(t.dealData(res))
                 
                 let filename = "resources/kfc/twap/" + res[0].instrument_id + ".txt"
-                window.alert("filename:"+filename)
+                //window.alert("filename:"+filename)
                 fs.readFile(filename, 'utf-8', function(err, data){
                     if(err){
                         console.error(err);
@@ -269,8 +269,8 @@ export default {
                 //t.tableData = Object.freeze(oldTableData)
                 //t.tableData = tradeList
                 let filename = "resources/kfc/twap/" + oldTableData[0].instrumentId + ".txt"
-                window.alert("filename2:"+filename)
-                fs.readFile(filename, 'utf-8', function(err, data){
+                //window.alert("filename2:"+filename)
+                fs.readFile(filename, 'utf-8', function(err, filedata){
                     if(err){
                         console.error(err);
                     }else{
@@ -285,11 +285,11 @@ export default {
                                         updateTime: "no",
                                         updateTimeNum: 12,
                                         instrumentId: oldTableData[0].instrumentId,
-                                        side: sideName[oldTableData[0].side],
-                                        offset: offsetName[oldTableData[0].offset],
+                                        side: oldTableData[0].side,
+                                        offset: oldTableData[0].offset,
                                         price: "no",
                                         volume: add_up.toString(),
-                                        volume_total: "1000",
+                                        volume_total: filedata,
                                         clientId: "no",
                                         accountId: "no"
                                     }])
