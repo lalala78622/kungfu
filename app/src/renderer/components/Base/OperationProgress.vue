@@ -175,6 +175,13 @@ export default {
             })
         },
 
+        caculateRate(trade_val, total_str)
+        {
+            let caculate = Math.floor(trade_val*100 / Number(total_str))
+            let rate = caculate.toString() + "%"
+            return rate
+        },
+
         //重置数据
         resetData() {
             const t = this;
@@ -222,6 +229,7 @@ export default {
                         {
                             add_up += Number(res[i].volume)
                         }
+                        let rate_str = t.caculateRate(add_up, data)
 
                         t.tableData = Object.freeze([{
                                             id: "no",
@@ -233,7 +241,7 @@ export default {
                                             price: "no",
                                             volume: add_up.toString(),
                                             volume_total: data,
-                                            rate: "no",
+                                            rate: rate_str,
                                             clientId: "no",
                                             accountId: "no"
                                         }])
@@ -276,26 +284,27 @@ export default {
                     if(err){
                         console.error(err);
                     }else{
-                    let add_up = 0
-                    for(let i = 0; i < oldTableData.length; i++)
-                    {
-                        add_up += Number(oldTableData[i].volume)
-                    }
+                        let add_up = 0
+                        for(let i = 0; i < oldTableData.length; i++)
+                        {
+                            add_up += Number(oldTableData[i].volume)
+                        }
+                        let rate_str = t.caculateRate(add_up, filedata)
 
-                    t.tableData = Object.freeze([{
-                                        id: "no",
-                                        updateTime: "no",
-                                        updateTimeNum: 12,
-                                        instrumentId: oldTableData[0].instrumentId,
-                                        side: oldTableData[0].side,
-                                        offset: oldTableData[0].offset,
-                                        price: "no",
-                                        volume: add_up.toString(),
-                                        volume_total: filedata,
-                                        rate: "no",
-                                        clientId: "no",
-                                        accountId: "no"
-                                    }])
+                        t.tableData = Object.freeze([{
+                                            id: "no",
+                                            updateTime: "no",
+                                            updateTimeNum: 12,
+                                            instrumentId: oldTableData[0].instrumentId,
+                                            side: oldTableData[0].side,
+                                            offset: oldTableData[0].offset,
+                                            price: "no",
+                                            volume: add_up.toString(),
+                                            volume_total: filedata,
+                                            rate: rate_str,
+                                            clientId: "no",
+                                            accountId: "no"
+                                        }])
                     }
                 })
             })
