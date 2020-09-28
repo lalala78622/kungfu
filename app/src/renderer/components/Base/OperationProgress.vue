@@ -65,7 +65,6 @@ export default {
                 id: '',
                 dateRange: null
             },
-            total_volume: 0,
             getDataLock: false,
             tableData: Object.freeze([]),
             dateRangeDialogVisiblity: false
@@ -214,15 +213,14 @@ export default {
                     if(err){
                         console.error(err);
                     }else{
-                        //window.alert(data.toString())
+                        window.alert(data.toString())
 
                         let add_up = 0
                         for(let i = 0; i < res.length; i++)
                         {
                             add_up += Number(res[i].volume)
                         }
-                        window.alert(data.toString())
-                        t.total_volume = add_up
+
                         t.tableData = Object.freeze([{
                                             id: "no",
                                             updateTime: "no",
@@ -275,8 +273,6 @@ export default {
                     add_up += Number(oldTableData[i].volume)
                 }
 
-                t.total_volume = add_up
-                window.alert("total_volume="+t.total_volume.toString())
                 t.tableData = Object.freeze([{
                                     id: "no",
                                     updateTime: "no",
@@ -286,7 +282,7 @@ export default {
                                     offset: offsetName[oldTableData[0].offset],
                                     price: "no",
                                     volume: add_up.toString(),
-                                    volume_total: t.total_volume.toString(),
+                                    volume_total: "1000",
                                     clientId: "no",
                                     accountId: "no"
                                 }])
