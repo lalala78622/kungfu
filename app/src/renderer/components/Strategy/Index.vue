@@ -23,7 +23,7 @@
                             ref="trade-record"
                             :currentId="strategyId"
                             moduleType="strategy"
-                            :getDataMethod="getStrategyTrade"
+                            :getDataMethod="getAllStrategyTrade"
                             :nanomsgBackData="tradesFromNmsg"
                             ></OperationProgress>
                         </el-col>
@@ -154,6 +154,7 @@ export default {
         getStrategyPos: STRATEGY_API.getStrategyPos,
         getStrategyOrder: STRATEGY_API.getStrategyOrder,
         getStrategyTrade: STRATEGY_API.getStrategyTrade,
+        getAllStrategyTrade: STRATEGY_API.getAllStrategyTrade,
         getStrategyPnlMin: STRATEGY_API.getStrategyPnlMin,
         getStrategyPnlDay: STRATEGY_API.getStrategyPnlDay
 

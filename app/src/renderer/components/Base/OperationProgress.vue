@@ -81,6 +81,7 @@ export default {
         }),
 
         schema(){
+            //this.moduleType = 'account'
             return [{
                 type: 'text',
                 label: '代码',
@@ -105,6 +106,10 @@ export default {
                 type: 'text',
                 label: '进度',
                 prop: 'rate',
+            },{
+                type: 'text',
+                label: '策略',
+                prop: 'clientId'
             }]
         }
     },
@@ -208,7 +213,9 @@ export default {
             t.getDataLock = true
             t.tableData = Object.freeze([])
             //id:用户或者交易id，filter：需要筛选的数据
+            //window.alert("getDataMethod")
             return t.getDataMethod(t.currentId, t.filter, t.tradingDay).then(res => {
+                window.alert("length="+res.length)
                 if(!res || !res.length) {
                     t.tableData = Object.freeze([])
                     return;
@@ -242,7 +249,7 @@ export default {
                                             volume: add_up.toString(),
                                             volume_total: data,
                                             rate: rate_str,
-                                            clientId: "no",
+                                            clientId: res[0].clientId,
                                             accountId: "no"
                                         }])
                     }
@@ -302,7 +309,7 @@ export default {
                                             volume: add_up.toString(),
                                             volume_total: filedata,
                                             rate: rate_str,
-                                            clientId: "no",
+                                            clientId: oldTableData[0].clientId,
                                             accountId: "no"
                                         }])
                     }

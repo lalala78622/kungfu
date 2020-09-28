@@ -95,6 +95,7 @@ export const getStrategyTrade = async (strategyId: string, { id, dateRange }: Tr
     dateRange = dateRange || [];
     id = id || ''
     //新建与之前重名策略，防止get之前的数据    
+    //window.alert("getStrategyTrade");
     const strategyAddTime = await getStrategyAddTime(strategyId);
     const filterDate = buildDateRange(dateRange, tradingDay)
     return runSelectDB(
@@ -105,6 +106,24 @@ export const getStrategyTrade = async (strategyId: string, { id, dateRange }: Tr
         ` AND trading_day >= ${filterDate[0]}` +
         ` AND trading_day <= ${filterDate[1]}` +
         ` AND trade_time > ${strategyAddTime}` +
+        ` ORDER BY trade_time DESC`
+    )
+}
+
+export const getAllStrategyTrade = async (strategyId: string, { id, dateRange }: TradeInputData, tradingDay?: string) => {
+    dateRange = dateRange || [];
+    id = id || ''
+    //新建与之前重名策略，防止get之前的数据    
+    //window.alert("getAllStrategyTrade");
+    const strategyAddTime = await getStrategyAddTime(strategyId);
+    const filterDate = buildDateRange(dateRange, tradingDay)
+    window.alert("getAllStrategyTrade");
+    return runSelectDB(
+        LIVE_TRADING_DATA_DB,
+        `SELECT rowId, * FROM trades` +
+        ` WHERE instrument_id LIKE '%${id}%'` + //有id筛选的时候
+        ` AND trading_day >= ${filterDate[0]}` +
+        ` AND trading_day <= ${filterDate[1]}` +
         ` ORDER BY trade_time DESC`
     )
 }
