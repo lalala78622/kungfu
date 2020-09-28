@@ -215,7 +215,7 @@ export default {
             //id:用户或者交易id，filter：需要筛选的数据
             //window.alert("getDataMethod")
             return t.getDataMethod(t.currentId, t.filter, t.tradingDay).then(res => {
-                window.alert("length="+res.length)
+                //window.alert("length="+res.length)
                 if(!res || !res.length) {
                     t.tableData = Object.freeze([])
                     return;
@@ -249,7 +249,7 @@ export default {
                                             volume: add_up.toString(),
                                             volume_total: data,
                                             rate: rate_str,
-                                            clientId: res[0].clientId,
+                                            clientId: res[0].client_id,
                                             accountId: "no"
                                         }])
                     }

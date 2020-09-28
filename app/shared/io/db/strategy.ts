@@ -117,7 +117,7 @@ export const getAllStrategyTrade = async (strategyId: string, { id, dateRange }:
     //window.alert("getAllStrategyTrade");
     const strategyAddTime = await getStrategyAddTime(strategyId);
     const filterDate = buildDateRange(dateRange, tradingDay)
-    window.alert("getAllStrategyTrade");
+    //window.alert("getAllStrategyTrade");
     return runSelectDB(
         LIVE_TRADING_DATA_DB,
         `SELECT rowId, * FROM trades` +
