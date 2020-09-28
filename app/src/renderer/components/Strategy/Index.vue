@@ -17,14 +17,25 @@
                                 ></Pnl>
                         </el-col>
                     </el-row>
-                    <el-row style="height: 66.66%">
+                    <el-row style="height: 33.33%">
+                        <el-col>
+                            <OperationProgress 
+                            ref="trade-record"
+                            :currentId="strategyId"
+                            moduleType="strategy"
+                            :getDataMethod="getStrategyTrade"
+                            :nanomsgBackData="tradesFromNmsg"
+                            ></OperationProgress>
+                        </el-col>
+                    </el-row>
+                    <el-row style="height: 33.33%">
                         <el-col>
                             <Log></Log>                         
                         </el-col>
                     </el-row>
                 </el-col>
                 <el-col  :span="10">
-                    <el-row style="height: 25%">
+                    <el-row style="height: 33.3%">
                             <Pos
                             ref="pos"
                             :currentId="strategyId"
@@ -33,7 +44,7 @@
                             :nanomsgBackData="posFromNmsg"                   
                             ></Pos>
                     </el-row>
-                    <el-row  style="height: 25%">
+                    <el-row  style="height: 33.3%">
                             <CurrentOrder
                             ref="current-order"
                             :currentId="strategyId"
@@ -42,7 +53,7 @@
                             :nanomsgBackData="ordersFromNmsg"
                             ></CurrentOrder>                      
                     </el-row>
-                    <el-row style="height: 25%">
+                    <el-row style="height: 33.3%">
                             <TradeRecord 
                             ref="trade-record"
                             :currentId="strategyId"
@@ -51,7 +62,7 @@
                             :nanomsgBackData="tradesFromNmsg"
                             ></TradeRecord>
                     </el-row>
-                    <el-row style="height: 25%">
+                    <!--<el-row style="height: 25%">
                             <OperationProgress 
                             ref="trade-record"
                             :currentId="strategyId"
@@ -59,7 +70,7 @@
                             :getDataMethod="getStrategyTrade"
                             :nanomsgBackData="tradesFromNmsg"
                             ></OperationProgress>
-                    </el-row>
+                    </el-row>-->
                 </el-col>
 
         </div>

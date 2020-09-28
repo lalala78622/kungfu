@@ -214,7 +214,7 @@ export default {
                     if(err){
                         console.error(err);
                     }else{
-                        window.alert(data.toString())
+                        //window.alert(data.toString())
 
                         let add_up = 0
                         for(let i = 0; i < res.length; i++)
