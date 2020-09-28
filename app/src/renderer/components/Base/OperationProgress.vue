@@ -85,11 +85,13 @@ export default {
             return [{
                 type: 'text',
                 label: '代码',
-                prop: 'instrumentId'
+                prop: 'instrumentId',
+                width: '80px'
             },{
                 type: 'text',
                 label: '买卖',
-                prop: 'side'
+                prop: 'side',
+                width: '50px'
             },{
                 type: 'text',
                 label: '开平',
@@ -207,7 +209,6 @@ export default {
                 //writeCSV("a.csv", res)
                 //t.tableData = Object.freeze(t.dealData(res))
                 
-                window.alert("getData")
                 let filename = res[0].instrument_id + ".txt"
                 fs.readFile(filename, 'utf-8', function(err, data){
                     if(err){
