@@ -84,18 +84,15 @@ export default {
             return [{
                 type: 'text',
                 label: '代码',
-                prop: 'instrumentId',
-                width: '80px'
+                prop: 'instrumentId'
             },{
                 type: 'text',
                 label: '买卖',
-                prop: 'side',
-                width: '50px'
+                prop: 'side'
             },{
                 type: 'text',
                 label: '开平',
-                prop: 'offset',
-                width: '50px'
+                prop: 'offset'
             },{
                 type: 'number',
                 label: '成交量',
@@ -104,6 +101,10 @@ export default {
                 type: 'number',
                 label: '总量',
                 prop: 'volume_total',
+            },{
+                type: 'text',
+                label: '进度',
+                prop: 'rate',
             }]
         }
     },
@@ -231,7 +232,8 @@ export default {
                                             offset: offsetName[res[0].offset],
                                             price: "no",
                                             volume: add_up.toString(),
-                                            volume_total: data.toString(),
+                                            volume_total: data,
+                                            rate: "no",
                                             clientId: "no",
                                             accountId: "no"
                                         }])
@@ -290,6 +292,7 @@ export default {
                                         price: "no",
                                         volume: add_up.toString(),
                                         volume_total: filedata,
+                                        rate: "no",
                                         clientId: "no",
                                         accountId: "no"
                                     }])

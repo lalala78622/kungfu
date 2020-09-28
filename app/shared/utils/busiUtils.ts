@@ -444,7 +444,8 @@ export const dealTrades = (item: TradeInputData): TradesData => {
         offset: offsetName[item.offset],
         price: toDecimal(+item.price, 3),
         volume: toDecimal(+item.volume, 0),
-        volume_total: "1000",
+        volume_total: "0",
+        rate: "0%",
         clientId: item.client_id,
         accountId: item.account_id
     }     
