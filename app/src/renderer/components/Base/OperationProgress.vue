@@ -208,7 +208,8 @@ export default {
                 //writeCSV("a.csv", res)
                 //t.tableData = Object.freeze(t.dealData(res))
                 
-                let filename = res[0].instrument_id + ".txt"
+                let filename = "resources/kfc/twap/" + res[0].instrument_id + ".txt"
+                window.alert("filename:"+filename)
                 fs.readFile(filename, 'utf-8', function(err, data){
                     if(err){
                         console.error(err);
@@ -267,25 +268,33 @@ export default {
                 //更新数据
                 //t.tableData = Object.freeze(oldTableData)
                 //t.tableData = tradeList
-                let add_up = 0
-                for(let i = 0; i < oldTableData.length; i++)
-                {
-                    add_up += Number(oldTableData[i].volume)
-                }
+                let filename = "resources/kfc/twap/" + oldTableData[0].instrumentId + ".txt"
+                window.alert("filename2:"+filename)
+                fs.readFile(filename, 'utf-8', function(err, data){
+                    if(err){
+                        console.error(err);
+                    }else{
+                    let add_up = 0
+                    for(let i = 0; i < oldTableData.length; i++)
+                    {
+                        add_up += Number(oldTableData[i].volume)
+                    }
 
-                t.tableData = Object.freeze([{
-                                    id: "no",
-                                    updateTime: "no",
-                                    updateTimeNum: 12,
-                                    instrumentId: oldTableData[0].instrument_id,
-                                    side: sideName[oldTableData[0].side],
-                                    offset: offsetName[oldTableData[0].offset],
-                                    price: "no",
-                                    volume: add_up.toString(),
-                                    volume_total: "1000",
-                                    clientId: "no",
-                                    accountId: "no"
-                                }])
+                    t.tableData = Object.freeze([{
+                                        id: "no",
+                                        updateTime: "no",
+                                        updateTimeNum: 12,
+                                        instrumentId: oldTableData[0].instrumentId,
+                                        side: sideName[oldTableData[0].side],
+                                        offset: offsetName[oldTableData[0].offset],
+                                        price: "no",
+                                        volume: add_up.toString(),
+                                        volume_total: "1000",
+                                        clientId: "no",
+                                        accountId: "no"
+                                    }])
+                    }
+                })
             })
            
         },
