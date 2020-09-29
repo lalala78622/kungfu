@@ -222,111 +222,8 @@ export default {
                     return;
                 }
                 //writeCSV("a.csv", res)
-                //t.tableData = Object.freeze(t.dealData(res))
-                let table = []
-                let dic = {}
-                for(let i = 0; i < res.length; i++){
-                    if(!(res[i].instrument_id in dic)){
-                        let filename = "resources/kfc/twap/" + res[i].instrument_id + ".txt"
-                        //window.alert("filename:"+filename)
-                        /*fs.readFile(filename, 'utf-8', function(err, data){
-                            if(err){
-                                console.error(err);
-                            }else{
-                                window.alert(data.toString())*/
+                t.tableData = Object.freeze(t.dealData(res))
 
-                                /*let add_up = 0
-                                for(let j = 0; j < res.length; j++)
-                                {
-                                    add_up += Number(res[j].volume)
-                                }
-                                let rate_str = t.caculateRate(add_up, data)
-
-                                t.tableData = Object.freeze([{
-                                                    id: "no",
-                                                    updateTime: "no",
-                                                    updateTimeNum: 12,
-                                                    instrumentId: res[0].instrument_id,
-                                                    side: sideName[res[0].side],
-                                                    offset: offsetName[res[0].offset],
-                                                    price: "no",
-                                                    volume: add_up.toString(),
-                                                    volume_total: data,
-                                                    rate: rate_str,
-                                                    clientId: res[0].client_id,
-                                                    accountId: "no"
-                                                }])*/
-                                //window.alert("in"+res[i].instrument_id)
-                                let data = "5000"
-                                let add_up = Number(res[i].volume)
-                                let rate_str = t.caculateRate(add_up, data)
-                                let row = {
-                                                id: "no",
-                                                updateTime: "no",
-                                                updateTimeNum: 12,
-                                                instrumentId: res[i].instrument_id,
-                                                side: sideName[res[i].side],
-                                                offset: offsetName[res[i].offset],
-                                                price: "no",
-                                                volume: add_up.toString(),
-                                                volume_total: data,
-                                                rate: rate_str,
-                                                clientId: res[i].client_id,
-                                                accountId: "no"
-                                           }
-                                dic[res[i].instrument_id] = row
-                        /*    }
-                        })*/
-                    }else{
-                        //window.alert("else"+res[i].instrument_id)
-                        let add_up = Number(res[i].volume) + Number(dic[res[i].instrument_id].volume)
-                        let rate_str = t.caculateRate(add_up, dic[res[i].instrument_id].volume_total)                        
-                        dic[res[i].instrument_id].volume = add_up.toString()
-                        dic[res[i].instrument_id].rate = rate_str
-                    }
-
-                }
-                window.alert("aaa")
-                for(let symbol in dic){
-                    //window.alert("symbol:"+dic[symbol].instrumentId+" "+dic[symbol].volume)
-                    table.push(dic[symbol])
-                }
-                for(let j = 0; j < table.length; j++){
-                    window.alert(table[j].instrumentId + table[j].side+ table[j].offset+ table[j].volume+ table[j].volume_total+ table[j].rate+ table[j].clientId)
-                    let tradeList = [table[j]]
-                    let oldTableData = t.tableData;
-                    oldTableData = [...tradeList, ...oldTableData]
-                    //更新数据
-                    t.tableData = Object.freeze(oldTableData)                    
-                }
-                //t.tableData = Object.freeze(table)
-                                /*t.tableData = Object.freeze([{
-                                                    id: "no",
-                                                    updateTime: "no",
-                                                    updateTimeNum: 12,
-                                                    instrumentId: "no",
-                                                    side: "no",
-                                                    offset: "no",
-                                                    price: "no",
-                                                    volume: "no",
-                                                    volume_total: "no",
-                                                    rate: "no",
-                                                    clientId: "no",
-                                                    accountId: "no"
-                                                },{
-                                                    id: "no",
-                                                    updateTime: "no",
-                                                    updateTimeNum: 12,
-                                                    instrumentId: "no2",
-                                                    side: "no",
-                                                    offset: "no",
-                                                    price: "no",
-                                                    volume: "no",
-                                                    volume_total: "no",
-                                                    rate: "no",
-                                                    clientId: "no",
-                                                    accountId: "no"
-                                                }])*/
             }).finally(() => t.getDataLock = false)
         },
 
@@ -334,8 +231,25 @@ export default {
         dealData(data) {
             const t = this
             const historyData = data || []
-            const tableData = historyData.map(item => dealTrades(item))
-            return tableData
+            let tableData = historyData.map(item => dealTrades(item))
+
+            let tableData2 = []; let table_dic = {};
+            for(let i = 0; i < tableData.length; i++){
+                window.alert(tableData[i].instrumentId+tableData[i].volume)
+                if(!(tableData[i].instrumentId in table_dic)){
+                    table_dic[tableData[i].instrumentId] = 1
+                    tableData2.push(tableData[i])
+                }else{
+                    for(let j = 0; j < tableData2.length; j++){
+                        if(tableData2[j].instrumentId == tableData[i].instrumentId){
+                            window.alert("in")
+                            tableData2[j].volume = Number(tableData2[j].volume) + Number(tableData[i].volume)
+                            break
+                        }
+                    }
+                }
+            }
+            return tableData2
         },
 
 
