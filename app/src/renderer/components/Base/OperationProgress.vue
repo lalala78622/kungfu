@@ -235,14 +235,14 @@ export default {
 
             let tableData2 = []; let table_dic = {};
             for(let i = 0; i < tableData.length; i++){
-                window.alert(tableData[i].instrumentId+tableData[i].volume)
+                //window.alert(tableData[i].instrumentId+tableData[i].volume)
                 if(!(tableData[i].instrumentId in table_dic)){
                     table_dic[tableData[i].instrumentId] = 1
                     tableData2.push(tableData[i])
                 }else{
                     for(let j = 0; j < tableData2.length; j++){
                         if(tableData2[j].instrumentId == tableData[i].instrumentId){
-                            window.alert("in")
+                            //window.alert("in")
                             tableData2[j].volume = Number(tableData2[j].volume) + Number(tableData[i].volume)
                             break
                         }
@@ -268,11 +268,19 @@ export default {
             t.throttleInsertTrade(tradeData).then(tradeList => {
                 if(!tradeList) return;
                 let oldTableData = t.tableData;
-                oldTableData = [...tradeList, ...oldTableData]
-                //更新数据
-                //t.tableData = Object.freeze(oldTableData)
+                //oldTableData = [...tradeList, ...oldTableData]
+                
+                for(let i = 0; i < oldTableData.length; i++){
+                    if(oldTableData[i].instrumentId == tradeList[0].instrumentId){
+                        //window.alert("in")
+                        oldTableData[i].volume = Number(oldTableData[i].volume) + Number(tradeList[0].volume)
+                        break
+                    }
+                }
+
+                t.tableData = Object.freeze(oldTableData)
                 //t.tableData = tradeList
-                let filename = "resources/kfc/twap/" + oldTableData[0].instrumentId + ".txt"
+                /*let filename = "resources/kfc/twap/" + oldTableData[0].instrumentId + ".txt"
                 //window.alert("filename2:"+filename)
                 fs.readFile(filename, 'utf-8', function(err, filedata){
                     if(err){
@@ -300,7 +308,7 @@ export default {
                                             accountId: "no"
                                         }])
                     }
-                })
+                })*/
             })
            
         },
