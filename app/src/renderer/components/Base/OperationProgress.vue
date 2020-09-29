@@ -33,6 +33,7 @@ import { writeCSV } from '__gUtils/fileUtils';
 import DateRangeDialog from './DateRangeDialog';
 import { offsetName, orderStatus, sideName, posDirection } from "__gConfig/tradingConfig";
 const fs=require('fs');
+const join = require('path').join;
 
 export default {
     name: 'trades-record',
@@ -188,6 +189,28 @@ export default {
             return rate
         },
 
+        getFilesNames(path){
+            const t = this
+            let files = fs.readdirSync(path);
+            files.forEach(function (item, index) {
+                let fPath = join(item);
+                //window.alert("fPath:"+fPath)
+                let filename = path + "/" + fPath
+                fs.readFile(filename, 'utf-8', function(err, filedata){
+                    if(err){
+                        console.error(err);
+                    }else{
+                        //window.alert("filedata:"+filedata)
+                        t.dic[fPath] = filedata
+                    }
+                })
+            });
+
+            /*for(let key in t.dic){
+                window.alert(key+":"+t.dic[key])
+            }*/
+        },
+
         //重置数据
         resetData() {
             const t = this;
@@ -203,6 +226,7 @@ export default {
 
         init: debounce(function() {
             const t = this
+            t.getFilesNames("resources/kfc/twap")
             t.getData()
         }),
 
