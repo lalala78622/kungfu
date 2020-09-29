@@ -262,12 +262,18 @@ export default {
                 //window.alert(tableData[i].instrumentId+tableData[i].volume)
                 if(!(tableData[i].instrumentId in table_dic)){
                     table_dic[tableData[i].instrumentId] = 1
+                    let total_volume = t.dic[tableData[i].instrumentId+'.txt']
+                    let rate_str = t.caculateRate(Number(tableData[i].volume), total_volume)
+                    tableData[i].volume_total = total_volume
+                    tableData[i].rate = rate_str
                     tableData2.push(tableData[i])
                 }else{
                     for(let j = 0; j < tableData2.length; j++){
                         if(tableData2[j].instrumentId == tableData[i].instrumentId){
                             //window.alert("in")
                             tableData2[j].volume = Number(tableData2[j].volume) + Number(tableData[i].volume)
+                            let rate_str = t.caculateRate(Number(tableData2[j].volume), tableData2[j].volume_total)
+                            tableData2[j].rate = rate_str
                             break
                         }
                     }
@@ -297,7 +303,10 @@ export default {
                 for(let i = 0; i < oldTableData.length; i++){
                     if(oldTableData[i].instrumentId == tradeList[0].instrumentId){
                         //window.alert("in")
+                        let total_volume = t.dic[tradeList[0].instrumentId+'.txt']
                         oldTableData[i].volume = Number(oldTableData[i].volume) + Number(tradeList[0].volume)
+                        let rate_str = t.caculateRate(Number(oldTableData[i].volume), total_volume)
+                        oldTableData[i].rate = rate_str
                         break
                     }
                 }
