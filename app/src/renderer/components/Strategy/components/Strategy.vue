@@ -8,7 +8,10 @@
             <el-button size="mini" @click="handleAddStrategy" title="添加">添加</el-button>
         </tr-dashboard-header-item>
         <tr-dashboard-header-item>
-            <el-button size="mini" @click="getMyStrategyList" title="批量启动">批量启动</el-button>
+            <el-button size="mini" @click="startAllStrategies" title="批量启动">批量启动</el-button>
+        </tr-dashboard-header-item>
+        <tr-dashboard-header-item>
+            <el-button size="mini" @click="stopAllStrategies" title="全部停止">全部停止</el-button>
         </tr-dashboard-header-item>
     </div>
     <div class="table-body">
@@ -157,7 +160,6 @@ export default {
     beforeMount(){
         const t = this;
         t.getStrategyList();
-        //t.getMyStrategyList();
     },
 
     mounted(){
@@ -324,20 +326,33 @@ export default {
             }
         },
 
-        getMyStrategyList(){
+        startAllStrategies(){
             const t = this;
-            //window.alert("getMyStrategyList")
             return new Promise(resolve => {
                 t.$store.dispatch('getStrategyList').then(strategyList => {
                     resolve(strategyList)
-                    //设置第一条为currentStrategy
-                    /*if(!t.currentStrategy.strategy_id){
-                        t.$store.dispatch('setCurrentStrategy', strategyList[0] || {})
-                    }*/
+
                     for(let i = 0; i < strategyList.length; i++){
-                        window.alert("getMyStrategyList:"+strategyList[i].strategy_id+" "+strategyList[i].strategy_path)
+                        //window.alert("startAllStrategies:"+strategyList[i].strategy_id+" "+strategyList[i].strategy_path)
                         let strategyId = strategyList[i].strategy_id
                         let value = true
+                        switchStrategy(strategyId, value).then(({ type, message }) => t.$message[type](message));
+                    }
+
+                })
+            }) 
+        },
+
+        stopAllStrategies(){
+            const t = this;
+            return new Promise(resolve => {
+                t.$store.dispatch('getStrategyList').then(strategyList => {
+                    resolve(strategyList)
+
+                    for(let i = 0; i < strategyList.length; i++){
+                        //window.alert("startAllStrategies:"+strategyList[i].strategy_id+" "+strategyList[i].strategy_path)
+                        let strategyId = strategyList[i].strategy_id
+                        let value = false
                         switchStrategy(strategyId, value).then(({ type, message }) => t.$message[type](message));
                     }
 
