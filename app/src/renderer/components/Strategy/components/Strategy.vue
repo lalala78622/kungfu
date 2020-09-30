@@ -290,31 +290,30 @@ export default {
                 if(err){
                     console.error(err);
                 }else{
-                    window.alert("in")
                     let result = t.csvToObject(data)
                     for(let i = 0; i < result.length; i++){
-                        window.alert(result[i][2])
+                        //window.alert(result[i][2])
+                        //let strategy = "total3" /*+ i.toString()*/;
+                        let strategy = result[i][2].substr(0,6);
+                        let strategyPath = "total.py";
+                        //window.alert("Promise")
+                        let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
+                        firstStepPromise.then(() => {
+                            //window.alert("in")
+                            const strategyMethod = STRATEGY_API.addStrategy
+                            //window.alert("in2")
+                            strategyMethod(strategy, strategyPath)
+                            .then(() => t.getStrategyList())//get new list
+                            .then(() => {
+                                //t.$message.success((t.setStrategyDialogType === 'add'? '添加' : '修改') + '成功！')
+                                //t.handleClearAddStrategyDialog()//clear
+                            })
+                            .catch((err) => {
+                                if(err == 'cancel') return
+                                t.$message.error(err.message || '操作失败！')
+                            })
+                        })
                     }
-
-                    let strategy = "total3" /*+ i.toString()*/;
-                    let strategyPath = "D:/new/total.py";
-                    //window.alert("Promise")
-                    let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
-                    firstStepPromise.then(() => {
-                        //window.alert("in")
-                        const strategyMethod = STRATEGY_API.addStrategy
-                        //window.alert("in2")
-                        strategyMethod(strategy, strategyPath)
-                        .then(() => t.getStrategyList())//get new list
-                        .then(() => {
-                            //t.$message.success((t.setStrategyDialogType === 'add'? '添加' : '修改') + '成功！')
-                            //t.handleClearAddStrategyDialog()//clear
-                        })
-                        .catch((err) => {
-                            if(err == 'cancel') return
-                            t.$message.error(err.message || '操作失败！')
-                        })
-                    })
                 }
             })
         },
