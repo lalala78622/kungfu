@@ -8,6 +8,9 @@
             <el-button size="mini" @click="handleAddStrategy" title="添加">添加</el-button>
         </tr-dashboard-header-item>
         <tr-dashboard-header-item>
+            <el-button size="mini" @click="addStrategies" title="批量添加">批量添加</el-button>
+        </tr-dashboard-header-item>
+        <tr-dashboard-header-item>
             <el-button size="mini" @click="startAllStrategies" title="批量启动">批量启动</el-button>
         </tr-dashboard-header-item>
         <tr-dashboard-header-item>
@@ -266,6 +269,43 @@ export default {
             }
         },
 
+        addStrategies(){
+            const t = this;
+            //window.alert("addStrategies")
+            //t.$refs['setStrategyForm'].validate(valid => {
+                //if(valid){
+                    const strategy = "total3";
+                    const strategyPath = "D:/new/total.py";
+                    //window.alert("Promise")
+                    let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
+                    //window.alert("Promise2")
+                    /*if(t.setStrategyDialogType === 'add'){
+                        firstStepPromise = t.$confirm(`添加后策略ID不能更改，确认添加 ${strategy} 吗？`, '提示', {
+                            confirmButtonText: '确 定',
+                            cancelButtonText: '取 消',
+                        })
+                    }*/
+                    firstStepPromise.then(() => {
+                        //window.alert("in")
+                        const strategyMethod = STRATEGY_API.addStrategy
+                        //window.alert("in2")
+                        strategyMethod(strategy, strategyPath)
+                        .then(() => t.getStrategyList())//get new list
+                        .then(() => {
+                            //t.$message.success((t.setStrategyDialogType === 'add'? '添加' : '修改') + '成功！')
+                            //t.handleClearAddStrategyDialog()//clear
+                        })
+                        .catch((err) => {
+                            if(err == 'cancel') return
+                            t.$message.error(err.message || '操作失败！')
+                        })
+                    })
+                /*}else{
+                    return false
+                }*/
+            //})
+        },
+
         //确认添加/编辑策略
         handleConfirmAddEditorStrategy(){
             const t = this;
@@ -368,7 +408,6 @@ export default {
                     resolve(strategyList)
                     //设置第一条为currentStrategy
                     if(!t.currentStrategy.strategy_id){
-                        //window.alert("!t.currentStrategy.strategy_id")
                         t.$store.dispatch('setCurrentStrategy', strategyList[0] || {})
                     }
                 })
