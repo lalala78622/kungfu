@@ -272,19 +272,11 @@ export default {
         addStrategies(){
             const t = this;
             //window.alert("addStrategies")
-            //t.$refs['setStrategyForm'].validate(valid => {
-                //if(valid){
-                    const strategy = "total3";
-                    const strategyPath = "D:/new/total.py";
-                    //window.alert("Promise")
+            for(let i = 0; i < 2; i++){
+                    let strategy = "total3" + i.toString();
+                    let strategyPath = "D:/new/total.py";
+                    window.alert("Promise")
                     let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
-                    //window.alert("Promise2")
-                    /*if(t.setStrategyDialogType === 'add'){
-                        firstStepPromise = t.$confirm(`添加后策略ID不能更改，确认添加 ${strategy} 吗？`, '提示', {
-                            confirmButtonText: '确 定',
-                            cancelButtonText: '取 消',
-                        })
-                    }*/
                     firstStepPromise.then(() => {
                         //window.alert("in")
                         const strategyMethod = STRATEGY_API.addStrategy
@@ -300,10 +292,7 @@ export default {
                             t.$message.error(err.message || '操作失败！')
                         })
                     })
-                /*}else{
-                    return false
-                }*/
-            //})
+            }
         },
 
         //确认添加/编辑策略
