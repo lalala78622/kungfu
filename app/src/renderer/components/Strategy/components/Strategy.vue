@@ -154,6 +154,7 @@ export default {
     beforeMount(){
         const t = this;
         t.getStrategyList();
+        //t.getMyStrategyList();
     },
 
     mounted(){
@@ -320,6 +321,23 @@ export default {
             }
         },
 
+        getMyStrategyList(){
+            const t = this;
+            //window.alert("getMyStrategyList")
+            return new Promise(resolve => {
+                t.$store.dispatch('getStrategyList').then(strategyList => {
+                    resolve(strategyList)
+                    //设置第一条为currentStrategy
+                    /*if(!t.currentStrategy.strategy_id){
+                        t.$store.dispatch('setCurrentStrategy', strategyList[0] || {})
+                    }*/
+                    for(let i = 0; i < strategyList.length; i++){
+                        window.alert("getMyStrategyList:"+strategyList[i].strategy_id)
+                    }
+                })
+            }) 
+        },
+
         //获取策略列表
         getStrategyList(){
             const t = this;
@@ -328,6 +346,7 @@ export default {
                     resolve(strategyList)
                     //设置第一条为currentStrategy
                     if(!t.currentStrategy.strategy_id){
+                        //window.alert("!t.currentStrategy.strategy_id")
                         t.$store.dispatch('setCurrentStrategy', strategyList[0] || {})
                     }
                 })
