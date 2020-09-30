@@ -7,6 +7,9 @@
         <tr-dashboard-header-item>
             <el-button size="mini" @click="handleAddStrategy" title="添加">添加</el-button>
         </tr-dashboard-header-item>
+        <tr-dashboard-header-item>
+            <el-button size="mini" @click="getMyStrategyList" title="批量启动">批量启动</el-button>
+        </tr-dashboard-header-item>
     </div>
     <div class="table-body">
         <el-table
@@ -332,7 +335,7 @@ export default {
                         t.$store.dispatch('setCurrentStrategy', strategyList[0] || {})
                     }*/
                     for(let i = 0; i < strategyList.length; i++){
-                        window.alert("getMyStrategyList:"+strategyList[i].strategy_id)
+                        window.alert("getMyStrategyList:"+strategyList[i].strategy_id+" "+strategyList[i].strategy_path)
                     }
                 })
             }) 
