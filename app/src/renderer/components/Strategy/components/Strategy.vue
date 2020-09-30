@@ -138,7 +138,7 @@ import * as STRATEGY_API from '__io/db/strategy';
 import { switchStrategy } from '__io/actions/strategy';
 import { debounce } from '__gUtils/busiUtils';
 import { chineseValidator, specialStrValidator, noZeroAtFirstValidator } from '__assets/validator';
-
+const fs = require('fs');
 
 const BrowserWindow = require('electron').remote.BrowserWindow
 
@@ -269,13 +269,36 @@ export default {
             }
         },
 
+        csvToObject(csvString){
+            var csvarry = csvString.split("\r\n");
+            var datas = [];
+
+            for(var i = 0; i < csvarry.length; i++){
+                var data = csvarry[i].split(",");
+                if(data.length > 1){
+                    datas.push(data);
+                }
+            }
+            return datas;
+        },
+
         addStrategies(){
             const t = this;
             //window.alert("addStrategies")
-            for(let i = 0; i < 2; i++){
-                    let strategy = "total3" + i.toString();
+            let filename = "instruct.csv"
+            fs.readFile(filename, 'utf-8', function(err, data){
+                if(err){
+                    console.error(err);
+                }else{
+                    window.alert("in")
+                    let result = t.csvToObject(data)
+                    for(let i = 0; i < result.length; i++){
+                        window.alert(result[i][2])
+                    }
+
+                    let strategy = "total3" /*+ i.toString()*/;
                     let strategyPath = "D:/new/total.py";
-                    window.alert("Promise")
+                    //window.alert("Promise")
                     let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
                     firstStepPromise.then(() => {
                         //window.alert("in")
@@ -292,7 +315,8 @@ export default {
                             t.$message.error(err.message || '操作失败！')
                         })
                     })
-            }
+                }
+            })
         },
 
         //确认添加/编辑策略
