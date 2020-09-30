@@ -336,7 +336,11 @@ export default {
                     }*/
                     for(let i = 0; i < strategyList.length; i++){
                         window.alert("getMyStrategyList:"+strategyList[i].strategy_id+" "+strategyList[i].strategy_path)
+                        let strategyId = strategyList[i].strategy_id
+                        let value = true
+                        switchStrategy(strategyId, value).then(({ type, message }) => t.$message[type](message));
                     }
+
                 })
             }) 
         },
