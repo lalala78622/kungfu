@@ -341,6 +341,13 @@ public:
         SPDLOG_INFO("[pre_start] end.");
 	};
 
+    void pre_name(Context_ptr context, std::string name) override
+    {
+        SPDLOG_INFO("[pre_name] {}", name);
+
+        SPDLOG_INFO("[pre_name] end.");
+    }
+
     void post_start(Context_ptr context) override
     {
         SPDLOG_INFO("[post_start]");

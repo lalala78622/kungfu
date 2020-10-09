@@ -59,7 +59,7 @@ namespace kungfu
                     auto it = strategy_name_map.find(strategy->name);
                     if(it != strategy_name_map.end()){
                         SPDLOG_INFO("find in map:{}",it->first);
-
+                        strategy->pre_name(context_, it->first);
                     }
                 }
 

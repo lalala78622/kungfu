@@ -30,6 +30,9 @@ namespace kungfu
                 virtual void pre_start(Context_ptr context)
                 {};
 
+                virtual void pre_name(Context_ptr context, std::string name)
+                {};
+
                 virtual void post_start(Context_ptr context)
                 {};
 
