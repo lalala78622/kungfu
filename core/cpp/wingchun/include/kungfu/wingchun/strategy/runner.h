@@ -38,6 +38,7 @@ namespace kungfu
 
             private:
                 Context_ptr context_;
+                std::map<std::string, Strategy_ptr> strategy_name_map;
             };
         }
     }

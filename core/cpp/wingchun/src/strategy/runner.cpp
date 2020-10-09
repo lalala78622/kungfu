@@ -35,7 +35,8 @@ namespace kungfu
             void Runner::add_strategy(Strategy_ptr &strategy, std::string name)
             {
                 strategy->name = name;
-                SPDLOG_INFO("add_strategy:{}",name);
+                SPDLOG_INFO("add_strategy2:{}", strategy->name);
+                strategy_name_map.insert(make_pair(strategy->name, strategy));
                 strategies_.push_back(strategy);
             }
 
@@ -55,6 +56,11 @@ namespace kungfu
                 for (const auto &strategy : strategies_)
                 {
                     strategy->pre_start(context_);
+                    auto it = strategy_name_map.find(strategy->name);
+                    if(it != strategy_name_map.end()){
+                        SPDLOG_INFO("find in map:{}",it->first);
+
+                    }
                 }
 
                 events_ | is(msg::type::Quote) | filter([=](event_ptr event) { return context_->is_subscribed(event->data<Quote>());}) |
