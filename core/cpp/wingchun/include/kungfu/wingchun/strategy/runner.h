@@ -22,7 +22,7 @@ namespace kungfu
 
                 virtual ~Runner() = default;
 
-                void add_strategy(const Strategy_ptr& strategy);
+                void add_strategy(Strategy_ptr& strategy, std::string name);
 
                 void on_trading_day(const yijinjing::event_ptr &event, int64_t daytime) override;
 

@@ -38,7 +38,7 @@ def strategy(ctx, group, name, path, low_latency, replay, session_id):
         ctx.strategy = cpp.Strategy(ctx.location)
 
     runner = Runner(ctx, mode)
-    runner.add_strategy(ctx.strategy)
+    runner.add_strategy(ctx.strategy, name)
 
     if replay:
         ctx.session_id = session_id

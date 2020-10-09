@@ -32,8 +32,10 @@ namespace kungfu
                 return std::make_shared<Context>(*this, events_);
             }
 
-            void Runner::add_strategy(const Strategy_ptr &strategy)
+            void Runner::add_strategy(Strategy_ptr &strategy, std::string name)
             {
+                //strategy.name = name;
+                SPDLOG_INFO("add_strategy:{}",name);
                 strategies_.push_back(strategy);
             }
 
