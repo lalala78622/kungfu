@@ -80,6 +80,8 @@ namespace kungfu
                 virtual void on_trade(Context_ptr context, const msg::data::Trade &trade)
                 {};
 
+                std::string name;
+
             };
 
             DECLARE_PTR(Strategy)
