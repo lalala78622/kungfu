@@ -52,6 +52,7 @@ int64_t first_time = 0;
 int64_t begin_timestamp = 0;
 int64_t period = 600;//s
 int Expect_times = 120;
+std::string strategy_name;
 
 /*void test(){
     cout<<"test-----"<<endl;
@@ -219,12 +220,16 @@ void InitFile()
     for(auto it = strArray.begin(); it != strArray.end(); it++){
         std::string total = (*it)[2];
         std::string instrument_id = total.substr(0,6);
-        //SPDLOG_INFO("instrument_id:{}",instrument_id);
-        tickers.push_back(instrument_id);
-        double dvolume_per_share = stod((*it)[3]);
-        //SPDLOG_INFO("dvolume_per_share:{}",dvolume_per_share);
-		WriteTXT(instrument_id, (*it)[3]);
-        volume_map.insert(make_pair(instrument_id, dvolume_per_share));
+
+        if(instrument_id == strategy_name){
+            //SPDLOG_INFO("instrument_id:{}",instrument_id);
+            tickers.push_back(instrument_id);
+            double dvolume_per_share = stod((*it)[3]);
+            //SPDLOG_INFO("dvolume_per_share:{}",dvolume_per_share);
+    		WriteTXT(instrument_id, (*it)[3]);
+            volume_map.insert(make_pair(instrument_id, dvolume_per_share));
+        }
+
     }
 }
 string readfile(const char *filename){
@@ -344,7 +349,7 @@ public:
     void pre_name(Context_ptr context, std::string name) override
     {
         SPDLOG_INFO("[pre_name] {}", name);
-
+        strategy_name = name;
         SPDLOG_INFO("[pre_name] end.");
     }
 

@@ -55,12 +55,14 @@ namespace kungfu
 
                 for (const auto &strategy : strategies_)
                 {
-                    strategy->pre_start(context_);
+                    //strategy->pre_start(context_);
                     auto it = strategy_name_map.find(strategy->name);
                     if(it != strategy_name_map.end()){
                         SPDLOG_INFO("find in map:{}",it->first);
                         strategy->pre_name(context_, it->first);
                     }
+
+                    strategy->pre_start(context_);
                 }
 
                 events_ | is(msg::type::Quote) | filter([=](event_ptr event) { return context_->is_subscribed(event->data<Quote>());}) |
