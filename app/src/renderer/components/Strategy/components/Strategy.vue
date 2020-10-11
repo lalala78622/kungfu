@@ -295,7 +295,7 @@ export default {
                         //window.alert(result[i][2])
                         //let strategy = "total3" /*+ i.toString()*/;
                         let strategy = result[i][2].substr(0,6);
-                        let strategyPath = "../../total.py";
+                        let strategyPath = "../../cpp_demo.cp37-win_amd64.pyd";
                         //window.alert("Promise")
                         let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
                         firstStepPromise.then(() => {
