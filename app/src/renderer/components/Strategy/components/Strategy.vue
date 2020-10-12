@@ -105,6 +105,7 @@
             >
                 <el-input 
                 v-model.trim="setStrategiesForm.startTime" 
+                :disabled="'add' == 'set'"
                  placeholder="请输入开始时间"
                  ></el-input>
             </el-form-item>
@@ -122,6 +123,7 @@
             >
                 <el-input 
                 v-model.trim="setStrategiesForm.endTime" 
+                :disabled="'add' == 'set'"
                  placeholder="请输入结束时间"
                  ></el-input>
             </el-form-item>
@@ -197,6 +199,7 @@ import { remote } from 'electron';
 import { mapState, mapGetters } from 'vuex';
 import { openWin } from '__gUtils/busiUtils';
 import { deleteProcess } from '__gUtils/processUtils';
+import { outputJson } from '__gUtils/fileUtils';
 import * as STRATEGY_API from '__io/db/strategy';
 import { switchStrategy } from '__io/actions/strategy';
 import { debounce } from '__gUtils/busiUtils';
@@ -355,10 +358,29 @@ export default {
             return datas;
         },
 
+        writeTime(){
+            const t = this;
+            t.$refs['setStrategiesForm'].validate(valid => {
+                if(valid){
+                    //window.alert("valid")
+                    const startTime = t.setStrategiesForm.startTime;
+                    const endTime = t.setStrategiesForm.endTime;
+                    let config_json = {}
+                    config_json["beginTime"] = startTime
+                    config_json["endTime"] = endTime
+                    outputJson('aaa.json', config_json)
+                }else{
+                    return false
+                }
+            })
+        },
+
         addStrategies(){
             const t = this;
             //window.alert("addStrategies")
+            t.writeTime()
             t.handleClearAddStrategiesDialog()
+
             let filename = "instruct.csv"
             fs.readFile(filename, 'utf-8', function(err, data){
                 if(err){
