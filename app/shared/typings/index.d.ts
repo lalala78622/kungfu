@@ -176,6 +176,7 @@ interface TradesData {
     volume: string;
     volume_total: string;
     rate: string;
+    trade_money: string;
     clientId: string;
     accountId: string;
 }

@@ -446,6 +446,7 @@ export const dealTrades = (item: TradeInputData): TradesData => {
         volume: toDecimal(+item.volume, 0),
         volume_total: "0",
         rate: "0%",
+        trade_money: "0",
         clientId: item.client_id,
         accountId: item.account_id
     }     
