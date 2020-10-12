@@ -92,10 +92,10 @@
         <el-form ref="setStrategiesForm" label-width="90px" :model="setStrategiesForm">
             <!-- 自定义部分 -->
             <el-form-item
-                label="策略ID"
-                prop="strategyId"
+                label="开始时间"
+                prop="startTime"
                 :rules="[
-                { required: true, message: '请输入策略名称', trigger: 'blur' },
+                { required: true, message: '请输入开始时间', trigger: 'blur' },
                 { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
                 {validator: validateDuplicateStrategyId, trigger: 'blur'},
                 {validator: chineseValidator, trigger: 'blur'},
@@ -104,9 +104,25 @@
                 ]"
             >
                 <el-input 
-                v-model.trim="setStrategiesForm.strategyId" 
-                :disabled="setStrategyDialogType == 'set'"
-                 placeholder="请输入策略名称"
+                v-model.trim="setStrategiesForm.startTime" 
+                 placeholder="请输入开始时间"
+                 ></el-input>
+            </el-form-item>
+            <el-form-item
+                label="结束时间"
+                prop="endTime"
+                :rules="[
+                { required: true, message: '请输入结束时间', trigger: 'blur' },
+                { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
+                {validator: validateDuplicateStrategyId, trigger: 'blur'},
+                {validator: chineseValidator, trigger: 'blur'},
+                {validator: specialStrValidator, trigger: 'blur'},
+                {validator: noZeroAtFirstValidator, trigger: 'blur'}
+                ]"
+            >
+                <el-input 
+                v-model.trim="setStrategiesForm.endTime" 
+                 placeholder="请输入结束时间"
                  ></el-input>
             </el-form-item>
             <!--<el-form-item
@@ -205,7 +221,8 @@ export default {
                 strategyPath: "",
             },
             setStrategiesForm: {
-                strategyId: '',
+                startTime: '',
+                endTime: '',
             },
             renderTable: false,
         }
@@ -426,7 +443,7 @@ export default {
 
         handleClearAddStrategiesDialog(){
             const t = this;
-            t.setStrategiesForm = { strategyId: '' };
+            t.setStrategiesForm = { startTime: '', endTime: '' };
             t.setStrategiesDialogVisiblity = false
         },
 
