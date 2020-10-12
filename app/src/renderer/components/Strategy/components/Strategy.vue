@@ -8,7 +8,7 @@
             <el-button size="mini" @click="handleAddStrategy" title="添加">添加</el-button>
         </tr-dashboard-header-item>
         <tr-dashboard-header-item>
-            <el-button size="mini" @click="addStrategies" title="批量添加">批量添加</el-button>
+            <el-button size="mini" @click="handleAddStrategies" title="批量添加">批量添加</el-button>
         </tr-dashboard-header-item>
         <tr-dashboard-header-item>
             <el-button size="mini" @click="startAllStrategies" title="批量启动">批量启动</el-button>
@@ -81,6 +81,53 @@
 
     <el-dialog 
     width="340px" 
+    :title="批量添加策略"  
+    v-if="setStrategiesDialogVisiblity"
+    :visible.sync="setStrategiesDialogVisiblity" 
+    :close-on-click-modal="false"
+    :close-on-press-escape="true"
+    @close="handleClearAddStrategiesDialog"
+    @keyup.enter.native="addStrategies"
+    >
+        <el-form ref="setStrategiesForm" label-width="90px" :model="setStrategiesForm">
+            <!-- 自定义部分 -->
+            <el-form-item
+                label="策略ID"
+                prop="strategyId"
+                :rules="[
+                { required: true, message: '请输入策略名称', trigger: 'blur' },
+                { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
+                {validator: validateDuplicateStrategyId, trigger: 'blur'},
+                {validator: chineseValidator, trigger: 'blur'},
+                {validator: specialStrValidator, trigger: 'blur'},
+                {validator: noZeroAtFirstValidator, trigger: 'blur'}
+                ]"
+            >
+                <el-input 
+                v-model.trim="setStrategiesForm.strategyId" 
+                :disabled="setStrategyDialogType == 'set'"
+                 placeholder="请输入策略名称"
+                 ></el-input>
+            </el-form-item>
+            <!--<el-form-item
+            label="入口文件"
+            prop="strategyPath"
+            :rules="[
+                { required: true, message: '请选择策略入口文件路径', trigger: 'blur' },
+            ]"
+            >
+                <span class="path-selection-in-dialog text-overflow" :title="setStrategiesForm.strategyPath">{{setStrategiesForm.strategyPath}}</span>
+                <el-button size="mini" icon="el-icon-more" @click="handleBindStrategyFolder"></el-button>
+            </el-form-item>-->
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button  size="mini" @click="handleClearAddStrategiesDialog">取 消</el-button>
+            <el-button type="primary" size="mini" @click="addStrategies">确 定</el-button>
+        </div>
+    </el-dialog>
+
+    <el-dialog 
+    width="340px" 
     :title="setStrategyDialogType == 'add' ? '添加策略' : '设置策略'"  
     v-if="setStrategyDialogVisiblity"
     :visible.sync="setStrategyDialogVisiblity" 
@@ -150,11 +197,15 @@ export default {
         return {
             searchKeyword: '',
             searchKeywordDebounce: '',
+            setStrategiesDialogVisiblity: false,
             setStrategyDialogVisiblity: false,
             setStrategyDialogType: '',
             setStrategyForm: {
                 strategyId: '',
                 strategyPath: "",
+            },
+            setStrategiesForm: {
+                strategyId: '',
             },
             renderTable: false,
         }
@@ -223,6 +274,11 @@ export default {
             const t = this;
             t.setStrategyDialogVisiblity = true;
             t.setStrategyDialogType = 'add'
+        },
+
+        handleAddStrategies() {
+            const t = this;
+            t.setStrategiesDialogVisiblity = true
         },
 
         //删除策略
@@ -365,6 +421,12 @@ export default {
             t.setStrategyForm = { strategyId: '', strategyPath: '' };
             t.setStrategyDialogVisiblity = false;
             t.setStrategyDialogType = ''
+        },
+
+        handleClearAddStrategiesDialog(){
+            const t = this;
+            t.setStrategiesForm = { strategyId: '' };
+            t.setStrategiesDialogVisiblity = false
         },
 
         //check策略是否重复
