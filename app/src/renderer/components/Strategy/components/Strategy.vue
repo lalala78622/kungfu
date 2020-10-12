@@ -80,8 +80,9 @@
     </div>
 
     <el-dialog 
-    width="340px" 
-    :title="批量添加策略"  
+    height="340px"
+    width="450px" 
+    :title="批量添加策略"
     v-if="setStrategiesDialogVisiblity"
     :visible.sync="setStrategiesDialogVisiblity" 
     :close-on-click-modal="false"
@@ -97,9 +98,7 @@
                 :rules="[
                 { required: true, message: '请输入开始时间', trigger: 'blur' },
                 { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
-                {validator: validateDuplicateStrategyId, trigger: 'blur'},
                 {validator: chineseValidator, trigger: 'blur'},
-                {validator: specialStrValidator, trigger: 'blur'},
                 {validator: noZeroAtFirstValidator, trigger: 'blur'}
                 ]"
             >
@@ -115,9 +114,7 @@
                 :rules="[
                 { required: true, message: '请输入结束时间', trigger: 'blur' },
                 { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
-                {validator: validateDuplicateStrategyId, trigger: 'blur'},
                 {validator: chineseValidator, trigger: 'blur'},
-                {validator: specialStrValidator, trigger: 'blur'},
                 {validator: noZeroAtFirstValidator, trigger: 'blur'}
                 ]"
             >
@@ -368,7 +365,7 @@ export default {
                     let config_json = {}
                     config_json["beginTime"] = startTime
                     config_json["endTime"] = endTime
-                    outputJson('aaa.json', config_json)
+                    outputJson('config.json', config_json)
             /*    }else{
                     return false
                 }

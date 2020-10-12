@@ -271,7 +271,8 @@ int64_t formatISO8601_to_timestamp(std::string time)
 void SetConfig()
 {
     SPDLOG_INFO("[SetConfig]");
-    std::string config = readfile("../../../../../../set/config.json");
+    //std::string config = readfile("../../../../../../set/config.json");
+    std::string config = readfile("../../config.json");
     Document json;
     json.Parse(config.c_str());
     std::string beginTime = json["beginTime"].GetString();
