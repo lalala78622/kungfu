@@ -123,16 +123,16 @@
                  placeholder="请输入结束时间"
                  ></el-input>
             </el-form-item>
-            <!--<el-form-item
-            label="入口文件"
-            prop="strategyPath"
+            <el-form-item
+            label="csv路径"
+            prop="csvPath"
             :rules="[
-                { required: true, message: '请选择策略入口文件路径', trigger: 'blur' },
+                { required: true, message: '请选择csv文件路径', trigger: 'blur' },
             ]"
             >
-                <span class="path-selection-in-dialog text-overflow" :title="setStrategiesForm.strategyPath">{{setStrategiesForm.strategyPath}}</span>
-                <el-button size="mini" icon="el-icon-more" @click="handleBindStrategyFolder"></el-button>
-            </el-form-item>-->
+                <span class="path-selection-in-dialog text-overflow" :title="setStrategiesForm.csvPath">{{setStrategiesForm.csvPath}}</span>
+                <el-button size="mini" icon="el-icon-more" @click="handleBindStrategiesFolder"></el-button>
+            </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button  size="mini" @click="handleClearAddStrategiesDialog">取 消</el-button>
@@ -222,6 +222,7 @@ export default {
             setStrategiesForm: {
                 startTime: '',
                 endTime: '',
+                csvPath: '',
             },
             renderTable: false,
         }
@@ -268,6 +269,18 @@ export default {
                 if(!strategyPath || !strategyPath[0]) return;
                 t.setStrategyForm.strategyPath = strategyPath[0];
                 t.$refs['setStrategyForm'].validate() //手动进行再次验证，因数据放在span中，改变数据后无法触发验证
+            })
+        },
+
+        handleBindStrategiesFolder(){
+            const t = this;
+            const dialog = remote.dialog;
+            dialog.showOpenDialog({
+                properties: ['openFile']
+            }, (csvPath) => {
+                if(!csvPath || !csvPath[0]) return;
+                t.setStrategiesForm.csvPath = csvPath[0];
+                t.$refs['setStrategiesForm'].validate() //手动进行再次验证，因数据放在span中，改变数据后无法触发验证
             })
         },
 
@@ -354,10 +367,18 @@ export default {
             return datas;
         },
 
+        copyIt(from, to) {
+          fs.writeFileSync(to, fs.readFileSync(from));
+          //fs.createReadStream(src).pipe(fs.createWriteStream(dst));大文件复制
+        },
+
         writeTime(){
             const t = this;
             //t.$refs['setStrategiesForm'].validate(valid => {
             //    if(valid){
+                const csvPath = t.setStrategiesForm.csvPath;
+                //window.alert(csvPath)
+                t.copyIt(csvPath, "instruct.csv")
 
                     const startTime = t.setStrategiesForm.startTime;
                     const endTime = t.setStrategiesForm.endTime;
@@ -412,7 +433,7 @@ export default {
                         }
                     })
                 }else{
-                    window.alert("false")
+                    //window.alert("false")
                     return false
                 }
             })
@@ -469,7 +490,7 @@ export default {
 
         handleClearAddStrategiesDialog(){
             const t = this;
-            t.setStrategiesForm = { startTime: '', endTime: '' };
+            t.setStrategiesForm = { startTime: '', endTime: '', csvPath: '' };
             t.setStrategiesDialogVisiblity = false
         },
 
