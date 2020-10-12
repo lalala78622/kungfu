@@ -32,7 +32,7 @@ import { debounce, throttleInsert, dealTrades } from "__gUtils/busiUtils"
 import { writeCSV } from '__gUtils/fileUtils';
 import DateRangeDialog from './DateRangeDialog';
 import { offsetName, orderStatus, sideName, posDirection } from "__gConfig/tradingConfig";
-const fs=require('fs');
+const fs = require('fs');
 const join = require('path').join;
 
 export default {
@@ -340,15 +340,17 @@ export default {
                 //oldTableData = [...tradeList, ...oldTableData]
                 
                 for(let i = 0; i < oldTableData.length; i++){
-                    if(oldTableData[i].instrumentId == tradeList[0].instrumentId){
-                        window.alert("in")
-                        window.alert(tradeList.length.toString())
-                        let total_volume = t.dic[tradeList[0].instrumentId]
-                        oldTableData[i].volume = Number(oldTableData[i].volume) + Number(tradeList[0].volume)
-                        let rate_str = t.caculateRate(Number(oldTableData[i].volume), total_volume)
-                        oldTableData[i].rate = rate_str
-                        oldTableData[i].trade_money = Number(oldTableData[i].trade_money) + Number(tradeList[0].price) * Number(tradeList[0].volume)
-                        break
+                    for(let j = 0; j < tradeList.length; j++){
+                        if(oldTableData[i].instrumentId == tradeList[j].instrumentId){
+                            //window.alert("in")
+                            //window.alert(tradeList.length.toString())
+                            let total_volume = t.dic[tradeList[j].instrumentId]
+                            oldTableData[i].volume = Number(oldTableData[i].volume) + Number(tradeList[j].volume)
+                            let rate_str = t.caculateRate(Number(oldTableData[i].volume), total_volume)
+                            oldTableData[i].rate = rate_str
+                            oldTableData[i].trade_money = Number(oldTableData[i].trade_money) + Number(tradeList[j].price) * Number(tradeList[j].volume)
+                            //break
+                        }
                     }
                 }
 

@@ -114,7 +114,7 @@ export default {
                     t.ordersFromNmsg = Object.freeze(tradingData);
                     break
                 case MSG_TYPE.trade:
-                    if(strategyId !== t.strategyId) return;
+                    //if(strategyId !== t.strategyId) return;
                     t.tradesFromNmsg = Object.freeze(tradingData);
                     break
                 case MSG_TYPE.position:
