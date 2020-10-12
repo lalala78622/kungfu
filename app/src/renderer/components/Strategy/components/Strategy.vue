@@ -360,56 +360,64 @@ export default {
 
         writeTime(){
             const t = this;
-            t.$refs['setStrategiesForm'].validate(valid => {
-                if(valid){
-                    //window.alert("valid")
+            //t.$refs['setStrategiesForm'].validate(valid => {
+            //    if(valid){
+
                     const startTime = t.setStrategiesForm.startTime;
                     const endTime = t.setStrategiesForm.endTime;
                     let config_json = {}
                     config_json["beginTime"] = startTime
                     config_json["endTime"] = endTime
                     outputJson('aaa.json', config_json)
-                }else{
+            /*    }else{
                     return false
                 }
-            })
+            })*/
         },
 
         addStrategies(){
             const t = this;
             //window.alert("addStrategies")
-            t.writeTime()
-            t.handleClearAddStrategiesDialog()
+            t.$refs['setStrategiesForm'].validate(valid => {
+                if(valid){
 
-            let filename = "instruct.csv"
-            fs.readFile(filename, 'utf-8', function(err, data){
-                if(err){
-                    console.error(err);
+                    t.writeTime()
+                    t.handleClearAddStrategiesDialog()
+
+                    let filename = "instruct.csv"
+                    fs.readFile(filename, 'utf-8', function(err, data){
+                        if(err){
+                            console.error(err);
+                        }else{
+                            let result = t.csvToObject(data)
+                            for(let i = 0; i < result.length; i++){
+                                //window.alert(result[i][2])
+                                //let strategy = "total3" /*+ i.toString()*/;
+                                let strategy = result[i][2].substr(0,6);
+                                let strategyPath = "../../cpp_demo.cp37-win_amd64.pyd";
+                                //window.alert("Promise")
+                                let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
+                                firstStepPromise.then(() => {
+                                    //window.alert("in")
+                                    const strategyMethod = STRATEGY_API.addStrategy
+                                    //window.alert("in2")
+                                    strategyMethod(strategy, strategyPath)
+                                    .then(() => t.getStrategyList())//get new list
+                                    .then(() => {
+                                        //t.$message.success((t.setStrategyDialogType === 'add'? '添加' : '修改') + '成功！')
+                                        //t.handleClearAddStrategyDialog()//clear
+                                    })
+                                    .catch((err) => {
+                                        if(err == 'cancel') return
+                                        t.$message.error(err.message || '操作失败！')
+                                    })
+                                })
+                            }
+                        }
+                    })
                 }else{
-                    let result = t.csvToObject(data)
-                    for(let i = 0; i < result.length; i++){
-                        //window.alert(result[i][2])
-                        //let strategy = "total3" /*+ i.toString()*/;
-                        let strategy = result[i][2].substr(0,6);
-                        let strategyPath = "../../cpp_demo.cp37-win_amd64.pyd";
-                        //window.alert("Promise")
-                        let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
-                        firstStepPromise.then(() => {
-                            //window.alert("in")
-                            const strategyMethod = STRATEGY_API.addStrategy
-                            //window.alert("in2")
-                            strategyMethod(strategy, strategyPath)
-                            .then(() => t.getStrategyList())//get new list
-                            .then(() => {
-                                //t.$message.success((t.setStrategyDialogType === 'add'? '添加' : '修改') + '成功！')
-                                //t.handleClearAddStrategyDialog()//clear
-                            })
-                            .catch((err) => {
-                                if(err == 'cancel') return
-                                t.$message.error(err.message || '操作失败！')
-                            })
-                        })
-                    }
+                    window.alert("false")
+                    return false
                 }
             })
         },
