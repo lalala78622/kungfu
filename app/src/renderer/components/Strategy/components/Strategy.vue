@@ -341,6 +341,7 @@ export default {
         addStrategies(){
             const t = this;
             //window.alert("addStrategies")
+            t.handleClearAddStrategiesDialog()
             let filename = "instruct.csv"
             fs.readFile(filename, 'utf-8', function(err, data){
                 if(err){
