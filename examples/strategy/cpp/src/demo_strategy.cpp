@@ -197,8 +197,8 @@ void InitFile()
     /*char* buf = _getcwd(NULL, 0);
     cout << string(buf);*/
 
-    //std::string name = "../app-update.yml";
-    string name = "../../../../../../set/instruct.csv";
+    //string name = "../../../../../../set/instruct.csv";
+    string name = "../../instruct.csv";
     ifstream inFile(name.c_str(), ios::in);
     //cout << "file_exist:" << file_exist(name)<<endl;
     string lineStr;

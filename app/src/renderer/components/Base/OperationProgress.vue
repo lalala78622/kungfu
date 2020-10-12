@@ -211,6 +211,38 @@ export default {
             }*/
         },
 
+        csvToObject(csvString){
+            var csvarry = csvString.split("\r\n");
+            var datas = [];
+
+            for(var i = 0; i < csvarry.length; i++){
+                var data = csvarry[i].split(",");
+                if(data.length > 1){
+                    datas.push(data);
+                }
+            }
+            return datas;
+        },
+
+        getCsvConfig(){
+            const t = this
+            let filename = "instruct.csv"
+            fs.readFile(filename, 'utf-8', function(err, data){
+                if(err){
+                    console.error(err);
+                }else{
+                    let result = t.csvToObject(data)
+                    for(let i = 0; i < result.length; i++){
+
+                        let strategy = result[i][2].substr(0,6);
+                        let total_volume = result[i][3]
+                        t.dic[strategy] = total_volume
+
+                    }
+                }
+            })
+        },
+
         //重置数据
         resetData() {
             const t = this;
@@ -226,7 +258,8 @@ export default {
 
         init: debounce(function() {
             const t = this
-            t.getFilesNames("resources/kfc/twap")
+            //t.getFilesNames("resources/kfc/twap")
+            t.getCsvConfig()
             t.getData()
         }),
 
@@ -262,7 +295,7 @@ export default {
                 //window.alert(tableData[i].instrumentId+tableData[i].volume)
                 if(!(tableData[i].instrumentId in table_dic)){
                     table_dic[tableData[i].instrumentId] = 1
-                    let total_volume = t.dic[tableData[i].instrumentId+'.txt']
+                    let total_volume = t.dic[tableData[i].instrumentId]
                     let rate_str = t.caculateRate(Number(tableData[i].volume), total_volume)
                     tableData[i].volume_total = total_volume
                     tableData[i].rate = rate_str
@@ -303,7 +336,7 @@ export default {
                 for(let i = 0; i < oldTableData.length; i++){
                     if(oldTableData[i].instrumentId == tradeList[0].instrumentId){
                         //window.alert("in")
-                        let total_volume = t.dic[tradeList[0].instrumentId+'.txt']
+                        let total_volume = t.dic[tradeList[0].instrumentId]
                         oldTableData[i].volume = Number(oldTableData[i].volume) + Number(tradeList[0].volume)
                         let rate_str = t.caculateRate(Number(oldTableData[i].volume), total_volume)
                         oldTableData[i].rate = rate_str
