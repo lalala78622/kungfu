@@ -80,9 +80,8 @@
     </div>
 
     <el-dialog 
-    height="340px"
     width="450px" 
-    :title="批量添加策略"
+    title="批量添加策略"
     v-if="setStrategiesDialogVisiblity"
     :visible.sync="setStrategiesDialogVisiblity" 
     :close-on-click-modal="false"
