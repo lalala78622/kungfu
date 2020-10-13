@@ -124,7 +124,7 @@
                  ></el-input>
             </el-form-item>
             <el-form-item
-            label="csv路径"
+            label="指令单"
             prop="csvPath"
             :rules="[
                 { required: true, message: '请选择csv文件路径', trigger: 'blur' },

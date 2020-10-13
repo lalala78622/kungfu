@@ -102,11 +102,11 @@ export default {
                 prop: 'volume',
             },{
                 type: 'number',
-                label: '总量',
+                label: '目标量',
                 prop: 'volume_total',
             },{
                 type: 'text',
-                label: '进度',
+                label: '完成进度',
                 prop: 'rate',
             },{
                 type: 'text',
@@ -303,7 +303,7 @@ export default {
                     let rate_str = t.caculateRate(Number(tableData[i].volume), total_volume)
                     tableData[i].volume_total = total_volume
                     tableData[i].rate = rate_str
-                    tableData[i].trade_money = Number(tableData[i].price) * Number(tableData[i].volume)
+                    tableData[i].trade_money = Math.round(Number(tableData[i].price) * Number(tableData[i].volume))
                     tableData2.push(tableData[i])
                 }else{
                     for(let j = 0; j < tableData2.length; j++){
@@ -312,7 +312,7 @@ export default {
                             tableData2[j].volume = Number(tableData2[j].volume) + Number(tableData[i].volume)
                             let rate_str = t.caculateRate(Number(tableData2[j].volume), tableData2[j].volume_total)
                             tableData2[j].rate = rate_str
-                            tableData2[j].trade_money = Number(tableData2[j].trade_money) + Number(tableData[i].price) * Number(tableData[i].volume)
+                            tableData2[j].trade_money = Math.round(Number(tableData2[j].trade_money) + Number(tableData[i].price) * Number(tableData[i].volume))
                             break
                         }
                     }
@@ -348,7 +348,7 @@ export default {
                             oldTableData[i].volume = Number(oldTableData[i].volume) + Number(tradeList[j].volume)
                             let rate_str = t.caculateRate(Number(oldTableData[i].volume), total_volume)
                             oldTableData[i].rate = rate_str
-                            oldTableData[i].trade_money = Number(oldTableData[i].trade_money) + Number(tradeList[j].price) * Number(tradeList[j].volume)
+                            oldTableData[i].trade_money = Math.round(Number(oldTableData[i].trade_money) + Number(tradeList[j].price) * Number(tradeList[j].volume))
                             //break
                         }
                     }
