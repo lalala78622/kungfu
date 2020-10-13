@@ -406,6 +406,7 @@ export default {
                         if(err){
                             console.error(err);
                         }else{
+                            STRATEGY_API.deleteTradeData()
                             let result = t.csvToObject(data)
                             for(let i = 0; i < result.length; i++){
                                 //window.alert(result[i][2])
@@ -422,7 +423,7 @@ export default {
                                     strategyMethod(strategy, strategyPath)
                                     .then(() => t.getStrategyList())//get new list
                                     .then(() => {
-                                        window.alert("sql")
+                                        //window.alert("sql")
                                         let trade_id = "no" + strategy
                                         STRATEGY_API.insertTradeData(strategy, trade_id)
                                     })
