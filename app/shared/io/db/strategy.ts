@@ -138,6 +138,7 @@ export const getAllStrategyTrade = async (strategyId: string, { id, dateRange }:
         ` WHERE instrument_id LIKE '%${id}%'` + //有id筛选的时候
         ` AND trading_day >= ${filterDate[0]}` +
         ` AND trading_day <= ${filterDate[1]}` +
+        ` AND trade_time > ${strategyAddTime}` +
         ` ORDER BY trade_time DESC`
     )
 }
