@@ -61,6 +61,8 @@ interface Account {
 interface Strategy {
     strategy_id: string;
     strategy_path: string;
+    strategy_type: string;
+    run_time: string;
     add_time: number;
 }
 

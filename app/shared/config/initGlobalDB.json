@@ -15,7 +15,7 @@
     "strategys": [
         {
             "table": "strategys",
-            "sql": "create table if not exists strategys(strategy_id char(20) PRIMARY KEY, strategy_path char(250), add_time int);"
+            "sql": "create table if not exists strategys(strategy_id char(20) PRIMARY KEY, strategy_path char(250), strategy_type char(20), run_time char(30), add_time int);"
 
         }
     ]

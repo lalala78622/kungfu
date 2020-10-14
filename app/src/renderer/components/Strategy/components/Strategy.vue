@@ -28,7 +28,7 @@
         >
             <el-table-column
                 prop="strategy_id"
-                label="策略"
+                label="代码"
                 sortable
                 :show-overflow-tooltip="true"         
                 >
@@ -58,9 +58,16 @@
                 </template>
             </el-table-column>
             <el-table-column
-                label="路径"
+                label="类型"
                 sortable    
-                prop="strategy_path" 
+                prop="strategy_type" 
+                :show-overflow-tooltip="true"
+            >
+            </el-table-column>
+            <el-table-column
+                label="运行时间"
+                sortable    
+                prop="run_time" 
                 :show-overflow-tooltip="true"
             >
             </el-table-column>
