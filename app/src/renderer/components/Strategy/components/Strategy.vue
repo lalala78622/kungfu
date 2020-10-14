@@ -443,11 +443,8 @@ export default {
                                 let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
                                 firstStepPromise.then(() => {
 
-                                    window.alert("addStrategy")
-                                    window.alert(runTime)
-                                    window.alert(strategyType)
-                                    const strategyMethod = STRATEGY_API.addStrategy
-                                    strategyMethod(strategy, strategyPath)
+                                    const strategyMethod = STRATEGY_API.addStrategies
+                                    strategyMethod(strategy, strategyPath, strategyType, runTime)
                                     .then(() => t.getStrategyList())//get new list
                                     .then(() => {
                                         //window.alert("sql")

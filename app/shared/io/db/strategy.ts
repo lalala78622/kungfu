@@ -31,6 +31,11 @@ export const addStrategy = (strategy_id: string, strategy_path: string) => {
     return runInsertUpdateDeleteDB(STRATEGYS_DB, 'INSERT INTO strategys(strategy_id, strategy_path, add_time) VALUES (?, ?, ?)', [strategy_id, strategy_path || null, addTime])
 }
 
+export const addStrategies = (strategy_id: string, strategy_path: string, strategy_type: string, run_time: string) => {
+    const addTime = +new Date().getTime() * Math.pow(10,6)
+    return runInsertUpdateDeleteDB(STRATEGYS_DB, 'INSERT INTO strategys(strategy_id, strategy_path, strategy_type, run_time, add_time) VALUES (?, ?, ?, ?, ?)', [strategy_id, strategy_path, strategy_type, run_time || null, addTime])
+}
+
 /**
  * 删除策略
  * @param  {} strategy_id
