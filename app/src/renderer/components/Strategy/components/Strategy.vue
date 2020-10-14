@@ -58,7 +58,7 @@
                 </template>
             </el-table-column>
             <el-table-column
-                label="类型"
+                label="算法"
                 sortable    
                 prop="strategy_type" 
                 :show-overflow-tooltip="true"

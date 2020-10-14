@@ -125,6 +125,7 @@ export const getStrategyTrade = async (strategyId: string, { id, dateRange }: Tr
         ` AND trading_day >= ${filterDate[0]}` +
         ` AND trading_day <= ${filterDate[1]}` +
         ` AND trade_time > ${strategyAddTime}` +
+        ` AND price != 0` +
         ` ORDER BY trade_time DESC`
     )
 }
