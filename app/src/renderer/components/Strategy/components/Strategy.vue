@@ -147,11 +147,11 @@
                 :disabled="'add' == 'set'"
                  placeholder="请输入策略类型"
                  ></el-input>-->
-                    <el-select v-model="value" placeholder="请选择">
+                    <el-select v-model="setStrategiesForm.strategyType" placeholder="请选择策略">
                       <el-option
                         v-for="item in options"
                         :label="item.label"
-                        :value="item.value">
+                        :value="item.label">
                       </el-option>
                   </el-select>
             </el-form-item>
@@ -249,37 +249,10 @@ export default {
             },
             renderTable: false,
             options: [{
-              value: '选项1',
-              company: '腾讯',
-              label: '马化腾',
-              school: '深圳大学'
-
+              label: 'twap'
             }, {
-              value: '选项2',
-              company: '美团',
-              label: '王兴',
-              school: '清华大学'
-
-            }, {
-              value: '选项3',
-              company: '小米',
-              label: '雷军',
-              school: '武汉大学'
-
-            }, {
-              value: '选项4',
-              company: '今日头条',
-              label: '张一鸣',
-              school: '南开大学'
-
-            }, {
-              value: '选项5',
-              company: '红杉资本',
-              label: '沈南鹏',
-              school: '耶鲁大学'
-
+              label: 'test'
             }],
-            value: '',
         }
     },
 
@@ -453,10 +426,12 @@ export default {
             t.$refs['setStrategiesForm'].validate(valid => {
                 if(valid){
 
+                    //window.alert("valid")
                     const startTime = t.setStrategiesForm.startTime;
                     const endTime = t.setStrategiesForm.endTime;
                     const runTime = startTime + '-' + endTime
                     const strategyType = t.setStrategiesForm.strategyType;
+                    //window.alert(strategyType)
                     t.writeTime()
                     t.handleClearAddStrategiesDialog()
 
