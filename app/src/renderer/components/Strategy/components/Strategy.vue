@@ -250,8 +250,6 @@ export default {
             renderTable: false,
             options: [{
               label: 'twap'
-            }, {
-              label: 'test'
             }],
         }
     },

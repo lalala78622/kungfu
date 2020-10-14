@@ -268,6 +268,16 @@ int64_t formatISO8601_to_timestamp(std::string time)
     //return (timet-timezone)*1000+millsec;
     return timet;
 }
+int64_t time_to_timestamp(std::string stime)
+{
+    int64_t now = time(0);
+    tm *send_ltm = localtime(&now);//_CRT_SECURE_NO_WARNINGS
+    char queryTime [80];
+    std::strftime(queryTime, 80, "%Y-%m-%d ", send_ltm);
+    std::string format_time = string(queryTime) + stime + ":00";
+    int64_t timet = formatISO8601_to_timestamp(format_time);
+    return timet;
+}
 void SetConfig()
 {
     SPDLOG_INFO("[SetConfig]");
@@ -276,9 +286,9 @@ void SetConfig()
     Document json;
     json.Parse(config.c_str());
     std::string beginTime = json["beginTime"].GetString();
-    begin_timestamp = formatISO8601_to_timestamp(beginTime);
+    begin_timestamp = time_to_timestamp(beginTime);
     std::string endTime = json["endTime"].GetString();
-    int64_t end_timestamp = formatISO8601_to_timestamp(endTime);
+    int64_t end_timestamp = time_to_timestamp(endTime);
     
     period = end_timestamp - begin_timestamp;
     Expect_times = period / 5;
