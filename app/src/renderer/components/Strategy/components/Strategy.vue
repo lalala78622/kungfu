@@ -141,17 +141,19 @@
             <el-form-item
                 label="策略"
                 prop="strategyType"
-                :rules="[
-                { required: true, message: '请输入策略类型', trigger: 'blur' },
-                { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
-                {validator: chineseValidator, trigger: 'blur'}
-                ]"
             >
-                <el-input 
+                <!--<el-input 
                 v-model.trim="setStrategiesForm.strategyType" 
                 :disabled="'add' == 'set'"
                  placeholder="请输入策略类型"
-                 ></el-input>
+                 ></el-input>-->
+                    <el-select v-model="value" placeholder="请选择">
+                      <el-option
+                        v-for="item in options"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                  </el-select>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -246,6 +248,38 @@ export default {
                 strategyType: '',
             },
             renderTable: false,
+            options: [{
+              value: '选项1',
+              company: '腾讯',
+              label: '马化腾',
+              school: '深圳大学'
+
+            }, {
+              value: '选项2',
+              company: '美团',
+              label: '王兴',
+              school: '清华大学'
+
+            }, {
+              value: '选项3',
+              company: '小米',
+              label: '雷军',
+              school: '武汉大学'
+
+            }, {
+              value: '选项4',
+              company: '今日头条',
+              label: '张一鸣',
+              school: '南开大学'
+
+            }, {
+              value: '选项5',
+              company: '红杉资本',
+              label: '沈南鹏',
+              school: '耶鲁大学'
+
+            }],
+            value: '',
         }
     },
 
