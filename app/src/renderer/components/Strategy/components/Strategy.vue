@@ -104,6 +104,7 @@
                 :rules="[
                 { required: true, message: '请输入开始时间', trigger: 'blur' },
                 { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
+                {validator: validateTime, trigger: 'blur'},
                 {validator: chineseValidator, trigger: 'blur'}
                 ]"
             >
@@ -119,6 +120,7 @@
                 :rules="[
                 { required: true, message: '请输入结束时间', trigger: 'blur' },
                 { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
+                {validator: validateTime, trigger: 'blur'},
                 {validator: chineseValidator, trigger: 'blur'}
                 ]"
             >
@@ -534,6 +536,18 @@ export default {
             const ifDuplicate = t.strategyList.filter(s => (s.strategy_id === value)).length !== 0
             if(ifDuplicate && t.setStrategyDialogType !== 'set'){
                 callback(new Error('该策略ID已存在！'))
+            }else{
+                callback()
+            }
+        },
+
+        //check时间格式
+        validateTime(rule, value, callback){
+            const t = this;
+            let reg = /^(\d{2}):(\d{2})$/;
+            let r = value.match(reg);
+            if(r == null){
+                callback(new Error('时间格式不对，应为xx:xx'))
             }else{
                 callback()
             }
