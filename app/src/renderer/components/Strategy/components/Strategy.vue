@@ -104,8 +104,7 @@
                 :rules="[
                 { required: true, message: '请输入开始时间', trigger: 'blur' },
                 { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
-                {validator: chineseValidator, trigger: 'blur'},
-                {validator: noZeroAtFirstValidator, trigger: 'blur'}
+                {validator: chineseValidator, trigger: 'blur'}
                 ]"
             >
                 <el-input 
@@ -120,8 +119,7 @@
                 :rules="[
                 { required: true, message: '请输入结束时间', trigger: 'blur' },
                 { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
-                {validator: chineseValidator, trigger: 'blur'},
-                {validator: noZeroAtFirstValidator, trigger: 'blur'}
+                {validator: chineseValidator, trigger: 'blur'}
                 ]"
             >
                 <el-input 
@@ -139,6 +137,21 @@
             >
                 <span class="path-selection-in-dialog text-overflow" :title="setStrategiesForm.csvPath">{{setStrategiesForm.csvPath}}</span>
                 <el-button size="mini" icon="el-icon-more" @click="handleBindStrategiesFolder"></el-button>
+            </el-form-item>
+            <el-form-item
+                label="策略"
+                prop="strategyType"
+                :rules="[
+                { required: true, message: '请输入策略类型', trigger: 'blur' },
+                { min: 1, max: 20, message: '长度不能超过 20 个字符', trigger: 'blur' },
+                {validator: chineseValidator, trigger: 'blur'}
+                ]"
+            >
+                <el-input 
+                v-model.trim="setStrategiesForm.strategyType" 
+                :disabled="'add' == 'set'"
+                 placeholder="请输入策略类型"
+                 ></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -230,6 +243,7 @@ export default {
                 startTime: '',
                 endTime: '',
                 csvPath: '',
+                strategyType: '',
             },
             renderTable: false,
         }
@@ -405,6 +419,10 @@ export default {
             t.$refs['setStrategiesForm'].validate(valid => {
                 if(valid){
 
+                    const startTime = t.setStrategiesForm.startTime;
+                    const endTime = t.setStrategiesForm.endTime;
+                    const runTime = startTime + '-' + endTime
+                    const strategyType = t.setStrategiesForm.strategyType;
                     t.writeTime()
                     t.handleClearAddStrategiesDialog()
 
@@ -424,9 +442,11 @@ export default {
                                 //window.alert("Promise")
                                 let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
                                 firstStepPromise.then(() => {
-                                    //window.alert("in")
+
+                                    window.alert("addStrategy")
+                                    window.alert(runTime)
+                                    window.alert(strategyType)
                                     const strategyMethod = STRATEGY_API.addStrategy
-                                    //window.alert("in2")
                                     strategyMethod(strategy, strategyPath)
                                     .then(() => t.getStrategyList())//get new list
                                     .then(() => {
