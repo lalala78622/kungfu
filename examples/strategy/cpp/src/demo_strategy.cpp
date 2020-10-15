@@ -41,10 +41,20 @@ struct SENDSET
     int64_t time;
     int64_t volume;
 };
+struct VolumeMSG
+{
+    std::string side_flag;
+    double volume;
+};
+struct PriceMSG
+{
+    std::string side_flag;
+    double price;
+};
 
 std::vector<std::string> tickers;
-std::map<std::string, double> volume_map;//instrument_id,volume
-std::map<std::string, double> price_map;//instrument_id,price
+std::map<std::string, VolumeMSG> volume_map;//instrument_id,volume
+std::map<std::string, PriceMSG> price_map;//instrument_id,price
 std::vector<SENDSET> send_vec;
 std::mutex send_mutex;
 bool start = false;
@@ -106,8 +116,12 @@ void InsertOrder(yijinjing::event_ptr event, Context_ptr context, std::string in
     //cout<<std::this_thread::get_id()<<endl;
     auto it = price_map.find(instrument_id);
     if(it != price_map.end()){
-        SPDLOG_INFO("will buy:{} {} {}",instrument_id, it->second, volume);
-        uint64_t orderid = context->insert_order(it->first, getExchang(it->first), account, it->second, volume, PriceType::Limit, Side::Buy, Offset::Open);
+        SPDLOG_INFO("will buy:{} {} {}",instrument_id, it->second.price, volume);
+        if(it->second.side_flag == "1"){
+            uint64_t orderid = context->insert_order(it->first, getExchang(it->first), account, it->second.price, volume, PriceType::Limit, Side::Buy, Offset::Open);
+        }else{
+            uint64_t orderid = context->insert_order(it->first, getExchang(it->first), account, it->second.price, volume, PriceType::Limit, Side::Sell, Offset::Open);
+        }
     }
 
     auto it2 = send_vec.begin();
@@ -225,9 +239,12 @@ void InitFile()
             //SPDLOG_INFO("instrument_id:{}",instrument_id);
             tickers.push_back(instrument_id);
             double dvolume_per_share = stod((*it)[3]);
+            std::string side_flag = (*it)[4];
             //SPDLOG_INFO("dvolume_per_share:{}",dvolume_per_share);
-    		WriteTXT(instrument_id, (*it)[3]);
-            volume_map.insert(make_pair(instrument_id, dvolume_per_share));
+    		//WriteTXT(instrument_id, (*it)[3]);
+            VolumeMSG volume_msg;
+            volume_msg.volume = dvolume_per_share; volume_msg.side_flag = side_flag;
+            volume_map.insert(make_pair(instrument_id, volume_msg));
         }
 
     }
@@ -397,20 +414,26 @@ public:
 
         auto it = price_map.find(quote.instrument_id);
         if(it != price_map.end()){
-            it->second = quote.ask_price[0];
+            if(it->second.side_flag == "1"){ it->second.price = quote.ask_price[0]; }
+            else{ it->second.price = quote.bid_price[0]; }
         }
         else{
             double dvolume_per_share = 0;
             auto it2 = volume_map.find(quote.instrument_id);
             if(it2 != volume_map.end()){
-                dvolume_per_share = it2->second;
-            }
+                dvolume_per_share = it2->second.volume;
+            //}
             //double dvolume_per_share = double(money_per_share) / quote.ask_price[0];
             //SPDLOG_INFO("dvolume_per_share:{}", dvolume_per_share);
-            int64_t volume_per_share = floor(dvolume_per_share/100) * 100;
-            SPDLOG_INFO("price_map instrument_id:{} volume_per_share:{}", quote.instrument_id, volume_per_share);
-            price_map.insert(make_pair(quote.instrument_id, quote.ask_price[0]));
-            Produce_sendset(quote.instrument_id, volume_per_share);
+                int64_t volume_per_share = floor(dvolume_per_share/100) * 100;
+                SPDLOG_INFO("price_map instrument_id:{} volume_per_share:{}", quote.instrument_id, volume_per_share);
+                PriceMSG price_msg;
+                price_msg.side_flag = it2->second.side_flag;
+                if(price_msg.side_flag == "1"){ price_msg.price = quote.ask_price[0];}
+                else{ price_msg.price = quote.bid_price[0]; }
+                price_map.insert(make_pair(quote.instrument_id, price_msg));
+                Produce_sendset(quote.instrument_id, volume_per_share);
+            }
         }
 
         /*if(start){
