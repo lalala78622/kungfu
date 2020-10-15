@@ -85,6 +85,13 @@
         "filter": [
           "default/*"
         ]
+      },
+      {
+        "from": "../strategys",
+        "to": "strategys",
+        "filter": [
+          "!**/btdata"
+        ]
       }
     ],
     "asar": false,
