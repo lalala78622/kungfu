@@ -53,14 +53,14 @@ export const updateStrategyPath = (strategy_id: string, strategy_path: string) =
     return runInsertUpdateDeleteDB(STRATEGYS_DB, 'UPDATE strategys SET strategy_path = ? WHERE strategy_id = ?', [strategy_path, strategy_id])    
 }
 
-export const insertTradeData = (strategy_id: string, trade_id: string) => {
+export const insertTradeData = (strategy_id: string, trade_id: string, side_flag: string) => {
     //window.alert("insertTradeData")
     //const date = require("silly-datetime")
     //let trading_day = date.format(new Date(),'YYYYMMDD')
     //let trading_day = "20201013"
     let trading_day = moment().format('YYYYMMDD');
     const addTime = +new Date().getTime() * Math.pow(10,6)
-    return runInsertUpdateDeleteDB(LIVE_TRADING_DATA_DB, "INSERT INTO trades(trade_id,order_id,parent_order_id,trade_time,trading_day,instrument_id,exchange_id,source_id,account_id,client_id,instrument_type,side,offset,hedge_flag,price,volume,tax,commission) VALUES (?,'1','0', ?, ?, ?,'SZE','xtp','15015255', ?,'1','0','0','0','0.0','0','0','0')", [trade_id, addTime, trading_day, strategy_id, strategy_id])
+    return runInsertUpdateDeleteDB(LIVE_TRADING_DATA_DB, "INSERT INTO trades(trade_id,order_id,parent_order_id,trade_time,trading_day,instrument_id,exchange_id,source_id,account_id,client_id,instrument_type,side,offset,hedge_flag,price,volume,tax,commission) VALUES (?,'1','0', ?, ?, ?,'SZE','xtp','15015255', ?,'1', ?,'0','0','0.0','0','0','0')", [trade_id, addTime, trading_day, strategy_id, strategy_id, side_flag])
 }
 
 export const deleteTradeData = () => {

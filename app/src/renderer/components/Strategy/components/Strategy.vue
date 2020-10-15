@@ -451,6 +451,7 @@ export default {
                                 let strategy = result[i][2].substr(0,6);
                                 //let strategyPath = "../../../../../../examples/strategy/cpp/build/Release/cpp_demo.cp37-win_amd64.pyd";
                                 let strategyPath = "../strategys/cpp_demo.cp37-win_amd64.pyd";
+                                let side_flag = (Number(result[i][4]) - 1).toString()
                                 //window.alert("Promise")
                                 let firstStepPromise = new Promise(resolve => resolve()) // 添加编辑行为不一样；
                                 firstStepPromise.then(() => {
@@ -461,7 +462,7 @@ export default {
                                     .then(() => {
                                         //window.alert("sql")
                                         let trade_id = "no" + strategy
-                                        STRATEGY_API.insertTradeData(strategy, trade_id)
+                                        STRATEGY_API.insertTradeData(strategy, trade_id, side_flag)
                                     })
                                     .catch((err) => {
                                         if(err == 'cancel') return
