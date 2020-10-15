@@ -112,10 +112,6 @@ export default {
                 type: 'text',
                 label: '累计金额',
                 prop: 'trade_money',
-            },{
-                type: 'text',
-                label: '策略',
-                prop: 'clientId'
             }]
         }
     },

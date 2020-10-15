@@ -143,6 +143,9 @@
             <el-form-item
                 label="策略"
                 prop="strategyType"
+                :rules="[
+                    { required: true, message: '请选择策略', trigger: 'blur' },
+                ]"
             >
                 <!--<el-input 
                 v-model.trim="setStrategiesForm.strategyType" 
