@@ -29,8 +29,11 @@
 import { mapGetters, mapState } from 'vuex'
 import moment from 'moment'
 import { debounce, throttleInsert, dealTrade } from "__gUtils/busiUtils"
+import { offsetName, orderStatus, sideName, posDirection } from "__gConfig/tradingConfig";
 import { writeCSV } from '__gUtils/fileUtils';
 import DateRangeDialog from './DateRangeDialog';
+//const moment = require('moment');
+const fs = require('fs');
 
 export default {
     name: 'trades-record',
@@ -107,10 +110,6 @@ export default {
                 type: 'number',
                 label: '成交量',
                 prop: 'volume',
-            },{
-                type: 'text',
-                label: this.moduleType == 'account' ? '策略': '账户',
-                prop: this.moduleType == 'account' ? 'clientId': 'accountId',
             }]
         }
     },
@@ -138,8 +137,9 @@ export default {
         //接收推送返回的数据
         nanomsgBackData(val) {
             const t = this;
-            if(!val || t.getDataLock) return
-            t.dealNanomsg(val)
+            return
+            /*if(!val || t.getDataLock) return
+            t.dealNanomsg(val)*/
         },
 
         tradingDay() {
@@ -181,6 +181,19 @@ export default {
             })
         },
 
+        csvToObject(csvString){
+            var csvarry = csvString.split("\r\n");
+            var datas = [];
+
+            for(var i = 0; i < csvarry.length; i++){
+                var data = csvarry[i].split(",");
+                if(data.length > 1){
+                    datas.push(data);
+                }
+            }
+            return datas;
+        },
+
         //重置数据
         resetData() {
             const t = this;
@@ -197,6 +210,7 @@ export default {
         init: debounce(function() {
             const t = this
             t.getData()
+            setInterval(t.getData, 1000);
         }),
 
         //首次获取数据
@@ -205,15 +219,49 @@ export default {
             if(t.getDataLock) throw new Error('get-data-lock');
             //获得获取数据的方法名
             t.getDataLock = true
-            t.tableData = Object.freeze([])
+            //t.tableData = Object.freeze([])
             //id:用户或者交易id，filter：需要筛选的数据
-            return t.getDataMethod(t.currentId, t.filter, t.tradingDay).then(res => {
+            /*return t.getDataMethod(t.currentId, t.filter, t.tradingDay).then(res => {
                 if(!res || !res.length) {
                     t.tableData = Object.freeze([])
                     return;
                 }
                 t.tableData = Object.freeze(t.dealData(res))
-            }).finally(() => t.getDataLock = false)
+            }).finally(() => t.getDataLock = false)*/
+            let tableData = []
+            let filename = "trades.csv"
+            fs.readFile(filename, 'utf-8', function(err, data){
+                if(err){
+                    t.tableData = Object.freeze([])
+                    console.error(err);
+                }else{
+                    let result = t.csvToObject(data)
+                    for(let i = 0; i < result.length; i++){
+                        /*if(result[i][5] == '0.0'){
+                            continue
+                        }*/
+                        let tradeData = {
+                                            id: [i.toString(), i.toString(), result[i][0], result[i][1]].join('_'),
+                                            updateTime: result[i][1] && moment(+result[i][1] / 1000000).format('YYYY-MM-DD HH:mm:ss'),
+                                            updateTimeNum: 1,
+                                            instrumentId: result[i][2],
+                                            side: sideName[result[i][3]],
+                                            offset: offsetName[result[i][4]],
+                                            price: result[i][5],
+                                            volume: result[i][6],
+                                            volume_total: "filedata",
+                                            rate: "rate_str",
+                                            trade_money: "20",
+                                            clientId: "clientId",
+                                            accountId: "no"
+                                        }
+                        //window.alert("in2")
+                        tableData.unshift(tradeData)
+                    }
+                    t.tableData = Object.freeze(tableData)
+                }
+            })
+            t.getDataLock = false
         },
 
         //对返回的数据进行处理
