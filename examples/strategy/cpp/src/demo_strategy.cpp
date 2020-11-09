@@ -10,6 +10,7 @@
 #include <kungfu/wingchun/msg.h>
 #include <kungfu/wingchun/strategy/context.h>
 #include <kungfu/wingchun/strategy/strategy.h>
+#include <vector>
 
 namespace py = pybind11;
 
@@ -28,11 +29,16 @@ public:
     void pre_start(Context_ptr context) override 
     {
         SPDLOG_INFO("cpp demo pre start");
+        context->add_account("xtp", "15015255", 20000000.0);
+        std::vector<std::string> sse_tickers;
+        sse_tickers.push_back("600036");
+        context->subscribe("xtp", sse_tickers, "SSE");
     };
 
     void on_quote(Context_ptr context, const msg::data::Quote &quote) override 
     {
         SPDLOG_INFO("cpp demo on quote");
+        uint64_t orderid = context->insert_order(quote.instrument_id, "SSE", "15015255", quote.ask_price[0], 100, PriceType::Limit, Side::Buy, Offset::Open);
     };
 };
 
